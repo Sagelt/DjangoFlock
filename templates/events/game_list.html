@@ -1,0 +1,10 @@
+<html>
+	<head>
+		<title>Games</title>
+	</head>
+	<body>
+		<ul>{% for game in games %}
+			<li><a href="{{ game.id }}">{{ game.name }}</a></li>
+		{% endfor %}</ul>
+	</body>
+</html>

@@ -16,9 +16,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     
     # Events and Games
-    url(r'^/games/$', include('events.views.list_games')),
-    url(r'^/games/new/$', include('events.views.create_game')),
-    url(r'^/games/(?P<id>\d+)/$', include('events.views.retrieve_game')),
-    url(r'^/games/(?P<id>\d+)/edit/$', include('events.views.edit_game_form')),
-    url(r'^/games/(?P<id>\d+)/delete/$', include('events.views.delete_game_form')),
+    url(r'^games/$', include('events.views.list_games')),
+    url(r'^games/new/$', include('events.views.create_game_form')),
+    url(r'^games/(?P<id>\d+)/$', include('events.views.retrieve_game')),
+    url(r'^games/(?P<id>\d+)/edit/$', include('events.views.edit_game_form')),
+    url(r'^games/(?P<id>\d+)/delete/$', include('events.views.delete_game_form')),
 )
