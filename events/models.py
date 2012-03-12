@@ -1,14 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import datetime
 
 # Create your models here.
 
 class Game(models.Model):
-    name = models.StringField()
+    name = models.TextField()
 
 class Event(models.Model):
-    gm = models.ForeignKey(models.User)
-    players = models.ManyToManyField(models.User)
+    gm = models.ForeignKey(User, related_name='gm')
+    players = models.ManyToManyField(User)
     game = models.ForeignKey(Game)
     start = models.DateTimeField()
     end = models.DateTimeField()
