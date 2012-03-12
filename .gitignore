@@ -1,4 +1,5 @@
 *.pyc
+database.db
 .Python
 bin
 include
