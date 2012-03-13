@@ -1,8 +1,17 @@
 from django.conf.urls.defaults import patterns, include, url
+from djangorestframework.resources import ModelResource
+from djangorestframework.views import ListOrCreateModelView, InstanceModelView
+from events.models import Game, Event
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
+
+class GameResource(ModelResource):
+    model = Game
+    
+class EventResource(ModelResource):
+    model = Event
 
 urlpatterns = patterns('',
     # Examples:
@@ -15,10 +24,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
-    # Events and Games
-    url(r'^games/$', 'events.views.list_games'),
-    url(r'^games/new/$', 'events.views.create_game_form'),
-    url(r'^games/(?P<id>\d+)/$', 'events.views.retrieve_game'),
-    url(r'^games/(?P<id>\d+)/edit/$', 'events.views.edit_game_form'),
-    url(r'^games/(?P<id>\d+)/delete/$', 'events.views.delete_game_form'),
+    url(r'^games/$', ListOrCreateModelView.as_view(resource=GameResource)),
+    url(r'^games/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=GameResource)),
+    url(r'^events/$', ListOrCreateModelView.as_view(resource=EventResource)),
+    url(r'^events/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=EventResource)),
 )

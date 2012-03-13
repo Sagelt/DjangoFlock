@@ -5,11 +5,13 @@ from datetime import datetime
 # Create your models here.
 
 class Game(models.Model):
-    name = models.TextField()
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return "Game: %s" % self.name
 
 class Event(models.Model):
     gm = models.ForeignKey(User, related_name='gm')
-    players = models.ManyToManyField(User)
+    players = models.ManyToManyField(User, blank=True, null=True)
     game = models.ForeignKey(Game)
     start = models.DateTimeField()
     end = models.DateTimeField()
