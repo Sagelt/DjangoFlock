@@ -7,7 +7,7 @@ from datetime import datetime
 class Game(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
-        return "Game: %s" % self.name
+        return self.name
 
 class Event(models.Model):
     gm = models.ForeignKey(User, related_name='gm')
