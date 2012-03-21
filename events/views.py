@@ -1,8 +1,9 @@
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from djangorestframework import status
-from djangorestframework.views import View
+from djangorestframework.views import View, InstanceModelView
 from djangorestframework.response import Response
+from djangorestframework.permissions import IsUserOrIsAnonReadOnly
 from events.models import Event
 from events.forms import EventForm
 
@@ -25,7 +26,7 @@ class EventRoot(View):
         if request.user.is_authenticated():
             gm = request.user
         else:
-            raise HttpResponseForbidden
+            raise PermissionDenied
         start = self.CONTENT['start']
         end = self.CONTENT['end']
         min = self.CONTENT['min']
@@ -41,3 +42,7 @@ class EventRoot(View):
         event_id = event.id
         return Response(status.HTTP_201_CREATED,
                         headers={'Location': reverse('event-instance', args=[event_id])})
+
+class EventModelView(InstanceModelView):
+    form = EventForm
+    permissions = (IsUserOrIsAnonReadOnly, )

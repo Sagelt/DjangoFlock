@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from djangorestframework.views import ListOrCreateModelView, InstanceModelView
 from events.resources import GameResource, EventResource
-from events.views import EventRoot
+from events.views import EventRoot, EventModelView
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -21,5 +21,5 @@ urlpatterns = patterns('',
     url(r'^games/$', ListOrCreateModelView.as_view(resource=GameResource)),
     url(r'^games/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=GameResource)),
     url(r'^events/$', EventRoot.as_view()),
-    url(r'^events/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=EventResource), name='event-instance'),
+    url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(resource=EventResource), name='event-instance'),
 )
