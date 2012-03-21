@@ -11,6 +11,6 @@ class GameResource(ModelResource):
     
 class EventResource(ModelResource):
     model = Event
-    fields = (('gm', UserResource),
+    fields = (('host', UserResource),
               ('players', UserResource), ('game', GameResource),
               'start', 'end', 'min', 'max')
