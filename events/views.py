@@ -7,9 +7,9 @@ from djangorestframework.permissions import IsUserOrIsAnonReadOnly, \
 from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
+from events.exceptions import EventFullException, OwnEventException
 from events.forms import EventForm
 from events.models import Event
-from events.exceptions import EventFullException, OwnEventException
 
 class GameRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
