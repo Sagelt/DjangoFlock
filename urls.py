@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     
     url(r'^games/$', GameRoot.as_view(resource=GameResource)),
     url(r'^games/(?P<pk>[^/]+)/$', GameModelView.as_view(resource=GameResource)),
-    url(r'^events/$', EventRoot.as_view()),
+    url(r'^events/$', EventRoot.as_view(resource=EventResource)),
     url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(resource=EventResource), name='event-instance'),
     url(r'^events/(?P<pk>[^/]+)/join/$', EventJoinView.as_view(resource=EventResource)),
     url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(resource=EventResource)),

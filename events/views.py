@@ -4,32 +4,47 @@ from django.shortcuts import get_object_or_404
 from djangorestframework import status
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly, \
     IsAuthenticated
+from djangorestframework.renderers import TemplateRenderer, JSONRenderer, \
+    JSONPRenderer, XMLRenderer, DocumentingPlainTextRenderer
 from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
 from events.exceptions import EventFullException, OwnEventException
 from events.forms import EventForm
 from events.models import Event
+from events.resources import EventResource
+
+class HTMLRenderer(TemplateRenderer):
+    media_type = 'text/html'
+
+class GameListHTMLRenderer(HTMLRenderer):
+    template = 'events/game_list.html'
+
+class GameInstanceHTMLRenderer(HTMLRenderer):
+    template = 'events/game.html'
+
+class EventListHTMLRenderer(HTMLRenderer):
+    template = 'events/event_list.html'
+
+class EventInstanceHTMLRenderer(HTMLRenderer):
+    template = 'events/event.html'
 
 class GameRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (GameListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
 
 class GameModelView(InstanceModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (GameInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
 
-class EventRoot(View):
-    """
-    """
+class EventRoot(ListOrCreateModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (EventListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
     
-    def get(self, request):
-        """
-        List all events.
-        """
-        events = Event.objects.all().order_by('start')
-        return [reverse('event-instance', args=[event.id]) for event in events]
-        
     def post(self, request):
         """
         Create new event
@@ -57,6 +72,8 @@ class EventRoot(View):
 class EventModelView(InstanceModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (EventInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
     
     def delete(self, request, pk):
         event = get_object_or_404(Event, pk=pk)

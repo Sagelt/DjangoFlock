@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %} | Events{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block main %}
+<h1>Current Games</h1>
+<ul>
+	{% for event in object %}
+	<li><a href="{{ event.url }}">{{ event.game.name }} with {{ event.host.username }}</a></li>
+	{% endfor %}
+</ul>
+{% if user.is_authenticated %}
+<p>Link to create-new-form here.</p>
+{% endif %}
+{% endblock %}

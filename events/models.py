@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from events.exceptions import EventFullException, OwnEventException
 

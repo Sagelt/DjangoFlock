@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %} | {{ object.game.name }} with {{ object.host.username }}{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block main %}
+<h1>{{ object.game.name }} with {{ object.host.username }}</h1>
+<strong>STUFF</strong>
+{% if user.is_authenticated %}
+<p>Link to create-new-form here.</p>
+{% endif %}
+{% endblock %}
