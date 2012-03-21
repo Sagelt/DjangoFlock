@@ -13,4 +13,12 @@ class EventResource(ModelResource):
     model = Event
     fields = (('host', UserResource),
               ('players', UserResource), ('game', GameResource),
-              'start', 'end', 'min', 'max')
+              'start', 'end', 'min', 'max', 'join', 'leave')
+    
+    def join(self, instance):
+        # TODO How hackish is this?
+        return self.url(instance) + "join/"
+    
+    def leave(self, instance):
+        # TODO How hackish is this?
+        return self.url(instance) + "leave/"
