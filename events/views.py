@@ -1,16 +1,24 @@
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from djangorestframework import status
-from djangorestframework.views import View, InstanceModelView
-from djangorestframework.response import Response
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly
-from events.models import Event
+from djangorestframework.response import Response
+from djangorestframework.views import View, InstanceModelView, \
+    ListOrCreateModelView
 from events.forms import EventForm
+from events.models import Event
+
+class GameRoot(ListOrCreateModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
+
+class GameModelView(InstanceModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
 
 class EventRoot(View):
     """
     """
     form = EventForm
+    permissions = (IsUserOrIsAnonReadOnly, )
     
     def get(self, request):
         """
