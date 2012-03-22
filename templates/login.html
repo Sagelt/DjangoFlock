@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Log In{% endblock %}
+
+{% block main %}
+{% if form.errors %}
+<div class="alert alert-error">Incorrect username or password.</div>
+{% endif %}
+<form action="/login/" method='post' class='form-inline well'>
+	<input type='text' name='username' class='input-small' placeholder='Username' />
+	<input type='password' name='password' class='input-small' placeholder='Password' />
+	<label class="checkbox">
+    	<input type="checkbox"> Remember me
+  	</label>
+  	{% csrf_token %}
+	<button type='submit' class='btn'>log in</button>
+</form>
+{% endblock %}
