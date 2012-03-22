@@ -7,7 +7,24 @@
 
 {% block main %}
 <h1>{{ object.game.name }} with {{ object.host.username }}</h1>
-<strong>STUFF</strong>
+<ul>
+	<li>Start time: {{ object.start }}</li>
+	<li>End time: {{ object.end }}</li>
+	<li>Duration: {{ object.duration }}</li>
+	<li>Minimum players: {{ object.min }}</li>
+	<li>Maximum players: {{ object.max }}</li>
+	{% if object.players.all %}
+	<li>Current players:
+		<ul>
+			{% for player in object.players.all %}
+			<li>{{ player.name }}</li>
+			{% endfor %}
+		</ul>
+	</li>
+	{% else %}
+	<li>No players yet.</li>
+	{% endif %}
+</ul>
 {% if user.is_authenticated %}
 <p>Link to create-new-form here.</p>
 {% endif %}
