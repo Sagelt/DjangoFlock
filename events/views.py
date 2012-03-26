@@ -1,7 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from djangorestframework import status
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly, \
     IsAuthenticated
@@ -34,6 +34,11 @@ class GameUpdate(UpdateView):
     template_name = 'events/game_update.html'
     success_url = '/games/%(id)s/'
     model = Game
+    
+class GameDelete(DeleteView):
+    template_name = 'events/game_delete.html'
+    model = Game
+    success_url = '/games/'
 
 class EventListHTMLRenderer(HTMLRenderer):
     template = 'events/event_list.html'
