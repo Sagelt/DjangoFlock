@@ -2,6 +2,14 @@
 
 {% block title %}Log In{% endblock %}
 
+{% block js %}
+<script type="text/javascript">
+$(function(){
+    $('form input:first').focus();
+});
+</script>
+{% endblock %}
+
 {% block main %}
 {% if form.errors %}
 <div class="alert alert-error">Incorrect username or password.</div>

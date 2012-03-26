@@ -1,6 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.views.generic.edit import CreateView, UpdateView
 from djangorestframework import status
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly, \
     IsAuthenticated
@@ -10,8 +11,8 @@ from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
 from events.exceptions import EventFullException, OwnEventException
-from events.forms import EventForm
-from events.models import Event
+from events.forms import GameForm, EventForm
+from events.models import Event, Game
 from events.resources import EventResource
 
 class HTMLRenderer(TemplateRenderer):
@@ -22,6 +23,17 @@ class GameListHTMLRenderer(HTMLRenderer):
 
 class GameInstanceHTMLRenderer(HTMLRenderer):
     template = 'events/game.html'
+    
+class GameCreate(CreateView):
+    form_class = GameForm
+    template_name = 'events/game_create.html'
+    success_url = "/games/%(id)s/"
+
+class GameUpdate(UpdateView):
+    form_class = GameForm
+    template_name = 'events/game_update.html'
+    success_url = '/games/%(id)s/'
+    model = Game
 
 class EventListHTMLRenderer(HTMLRenderer):
     template = 'events/event_list.html'

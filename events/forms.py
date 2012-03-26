@@ -1,6 +1,10 @@
 from django import forms
 from events.models import Game, Event
 
+class GameForm(forms.ModelForm):
+    class Meta:
+        model = Game
+
 class EventForm(forms.Form):
     game = forms.ModelChoiceField(queryset=Game.objects.all().order_by('name'), empty_label=None)
     start = forms.DateTimeField()
