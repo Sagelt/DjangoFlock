@@ -15,13 +15,14 @@ class PublisherResource(ModelResource):
 class GameResource(ModelResource):
     model = Game
     ordering = ('name', )
-    fields = ('name', 'edition', 'publisher', 'url')
+    fields = ('name', 'edition', ('publisher', PublisherResource), 'url')
     
 class EventResource(ModelResource):
     model = Event
     ordering = ('start', )
     fields = (('host', UserResource),
-              ('players', UserResource), ('game', GameResource),
+              ('players', UserResource),
+              ('game', GameResource),
               'start', 'end', 'min', 'max', 'join', 'leave', 'url', 'duration')
     
     def join(self, instance):

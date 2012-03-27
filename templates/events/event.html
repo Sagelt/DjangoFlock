@@ -13,11 +13,11 @@
 	<li>Duration: {{ object.duration }}</li>
 	<li>Minimum players: {{ object.min }}</li>
 	<li>Maximum players: {{ object.max }}</li>
-	{% if object.players.all %}
+	{% if object.players %}
 	<li>Current players:
 		<ul>
-			{% for player in object.players.all %}
-			<li>{{ player.name }}</li>
+			{% for player in object.players %}
+			<li><a href="/users/{{ player.username }}">{{ player.username }}</a></li>
 			{% endfor %}
 		</ul>
 	</li>
@@ -26,6 +26,14 @@
 	{% endif %}
 </ul>
 {% if user.is_authenticated %}
+	{% if user.username == object.host.username %}
 <div><a class="btn btn-info" href="edit/">Edit</a> <a class="btn btn-danger" href="delete/">Delete</a></div>
+	{% else %}
+		{% if user.username not in players %}
+		<div><a class="btn btn-info" href="join/">Join</a></div>
+		{% else %}
+		<div><a class="btn btn-danger" href="leave/">Leave</a></div>
+		{% endif %}
+	{% endif %}
 {% endif %}
 {% endblock %}

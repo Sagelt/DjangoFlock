@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.template import RequestContext, loader
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from djangorestframework import status
@@ -59,6 +60,19 @@ class EventListHTMLRenderer(HTMLRenderer):
 
 class EventInstanceHTMLRenderer(HTMLRenderer):
     template = 'events/event.html'
+
+    def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* using the :attr:`template` specified on the class.
+        
+        Injects another variable into the context. 
+        """
+        if obj is None:
+            return ''
+        template = loader.get_template(self.template)
+        players = [u['username'] for u in obj['players']]
+        context = RequestContext(self.view.request, {'object': obj, 'players': players})
+        return template.render(context)
 
 class GameRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
@@ -123,6 +137,13 @@ class EventModelView(InstanceModelView):
 class EventJoinView(View):
     permissions = (IsAuthenticated, )
     
+    def get(self, request, pk):
+        """
+        Just passes through to .post so that the web interface works.
+        """
+        self.post(request, pk)
+        return redirect('/events/%s/' % pk)
+    
     def post(self, request, pk):
         user = self.user # Given the permissions setting, should always be authenticated.
         event = get_object_or_404(Event, pk=pk)
@@ -139,6 +160,13 @@ class EventJoinView(View):
     
 class EventLeaveView(View):
     permissions = (IsAuthenticated, )
+
+    def get(self, request, pk):
+        """
+        Just passes through to .post so that the web interface works.
+        """
+        self.post(request, pk)
+        return redirect('/events/%s/' % pk)
     
     def post(self, request, pk):
         user = self.user # Given the permissions setting, should always be authenticated
@@ -175,7 +203,11 @@ class EventUpdate(UpdateView):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(EventUpdate, self).dispatch(*args, **kwargs)
+        event = Event.objects.get(pk=kwargs['pk']) # Should exist. Will server error if not.
+        request = args[0] # Should be the request, will server error on next line if not.
+        if event.host == request.user:
+            return super(EventUpdate, self).dispatch(*args, **kwargs)
+        raise PermissionDenied
     
 class EventDelete(DeleteView):
     template_name = 'events/event_delete.html'
@@ -184,4 +216,8 @@ class EventDelete(DeleteView):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(EventDelete, self).dispatch(*args, **kwargs)
+        event = Event.objects.get(pk=kwargs['pk']) # Should exist. Will server error if not.
+        request = args[0] # Should be the request, will server error on next line if not.
+        if event.host == request.user:
+            return super(EventUpdate, self).dispatch(*args, **kwargs)
+        raise PermissionDenied
