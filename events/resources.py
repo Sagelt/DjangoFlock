@@ -15,7 +15,7 @@ class PublisherResource(ModelResource):
 class GameResource(ModelResource):
     model = Game
     ordering = ('name', )
-    fields = ('name', 'edition', 'publisher')
+    fields = ('name', 'edition', 'publisher', 'url')
     
 class EventResource(ModelResource):
     model = Event
