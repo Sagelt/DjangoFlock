@@ -147,7 +147,6 @@ class EventLeaveView(View):
         return Response(status.HTTP_204_NO_CONTENT)
     
 class EventCreate(CreateView):
-    # TODO Grab current user for host.
     form_class = EventForm
     template_name = 'events/event_create.html'
     success_url = "/events/%(id)s/"
@@ -155,6 +154,18 @@ class EventCreate(CreateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(EventCreate, self).dispatch(*args, **kwargs)
+    
+    def get_form_kwargs(self, **kwargs):
+        """
+        Extends `get_form_kwargs` to add an instance variable with the host set,
+        since this is not a form-submittable part of an Event. See the note at
+        https://docs.djangoproject.com/en/dev/topics/forms/modelforms/#using-a
+        -subset-of-fields-on-the-form for more information.
+        """
+        kwargs = super(EventCreate, self).get_form_kwargs(**kwargs)
+        event = Event(host=self.request.user)
+        kwargs['instance'] = event
+        return kwargs
 
 class EventUpdate(UpdateView):
     form_class = EventForm
