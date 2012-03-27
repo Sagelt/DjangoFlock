@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
@@ -14,7 +14,7 @@ from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
 from events.exceptions import EventFullException, OwnEventException
 from events.forms import GameForm, EventForm
-from events.models import Event, Game
+from events.models import Event, Game, Publisher
 from events.resources import EventResource
 
 class HTMLRenderer(TemplateRenderer):
@@ -41,9 +41,7 @@ class GameUpdate(UpdateView):
     success_url = '/games/%(id)s/'
     model = Game
     
-    # This currently redirects to login, even for logged in users, if they lack
-    # permission. That's ugly behavior.
-    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(GameUpdate, self).dispatch(*args, **kwargs)
     
@@ -52,9 +50,7 @@ class GameDelete(DeleteView):
     model = Game
     success_url = '/games/'
     
-    # This currently redirects to login, even for logged in users, if they lack
-    # permission. That's ugly behavior.
-    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(GameDelete, self).dispatch(*args, **kwargs)
 

@@ -1,16 +1,20 @@
 from django import forms
-from events.models import Game, Event
+from events.models import Publisher, Game, Event
+
+class PublisherForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        fields = ('name', 'publisher_url')
 
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
+        fields = ('name', 'publisher', 'edition')
 
-class EventForm(forms.Form):
-    game = forms.ModelChoiceField(queryset=Game.objects.all().order_by('name'), empty_label=None)
-    start = forms.DateTimeField()
-    end = forms.DateTimeField()
-    min = forms.IntegerField()
-    max = forms.IntegerField()
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ('game', 'start', 'end', 'min', 'max')
     
     def clean(self):
         cleaned_data = self.cleaned_data

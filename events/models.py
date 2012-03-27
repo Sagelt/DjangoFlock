@@ -6,8 +6,20 @@ from events.exceptions import EventFullException, OwnEventException
 
 # Create your models here.
 
+class Publisher(models.Model):
+    name = models.CharField(max_length=50)
+    publisher_url = models.URLField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return self.name
+
 class Game(models.Model):
     name = models.CharField(max_length=50)
+    edition = models.CharField(max_length=50)
+    publisher = models.ForeignKey(Publisher)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
 
@@ -19,6 +31,8 @@ class Event(models.Model):
     end = models.DateTimeField()
     min = models.IntegerField()
     max = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     
     def add_player(self, user):
         """
