@@ -25,7 +25,7 @@ class GameListHTMLRenderer(HTMLRenderer):
 
 class GameInstanceHTMLRenderer(HTMLRenderer):
     template = 'events/game.html'
-    
+
 class GameCreate(CreateView):
     form_class = GameForm
     template_name = 'events/game_create.html'
@@ -145,3 +145,32 @@ class EventLeaveView(View):
         event = get_object_or_404(Event, pk=pk)
         event.remove_player(user)
         return Response(status.HTTP_204_NO_CONTENT)
+    
+class EventCreate(CreateView):
+    # TODO Grab current user for host.
+    form_class = EventForm
+    template_name = 'events/event_create.html'
+    success_url = "/events/%(id)s/"
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(EventCreate, self).dispatch(*args, **kwargs)
+
+class EventUpdate(UpdateView):
+    form_class = EventForm
+    template_name = 'events/event_update.html'
+    success_url = '/events/%(id)s/'
+    model = Event
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(EventUpdate, self).dispatch(*args, **kwargs)
+    
+class EventDelete(DeleteView):
+    template_name = 'events/event_delete.html'
+    model = Event
+    success_url = '/events/'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(EventDelete, self).dispatch(*args, **kwargs)

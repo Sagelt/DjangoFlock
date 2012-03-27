@@ -6,13 +6,13 @@
 {% endblock %}
 
 {% block main %}
-<h1>Current Games</h1>
+<h1>Current Events</h1>
 <ul>
 	{% for event in object %}
 	<li><a href="{{ event.url }}">{{ event.game.name }} with {{ event.host.username }}</a></li>
 	{% endfor %}
 </ul>
 {% if user.is_authenticated %}
-<p>Link to create-new-form here.</p>
+<div><a class="btn btn-primary" href="new/">Create</a></div>
 {% endif %}
 {% endblock %}

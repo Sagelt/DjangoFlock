@@ -5,7 +5,8 @@ from djangorestframework.permissions import IsUserOrIsAnonReadOnly
 from djangorestframework.views import InstanceModelView, ListOrCreateModelView
 from events.resources import GameResource, EventResource, PublisherResource
 from events.views import EventRoot, EventModelView, GameRoot, GameModelView, \
-    EventJoinView, EventLeaveView, GameCreate, GameUpdate, GameDelete
+    EventJoinView, EventLeaveView, GameCreate, GameUpdate, GameDelete, EventCreate, \
+    EventUpdate, EventDelete
 
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
@@ -33,9 +34,12 @@ urlpatterns = patterns('',
     url(r'^games/(?P<pk>[^/]+)/delete/$', GameDelete.as_view()), # Form to delete
 
     url(r'^events/$', EventRoot.as_view(resource=EventResource)),
+    url(r'^events/new/$', EventCreate.as_view()), # Form to create
     url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(resource=EventResource), name='event-instance'),
     url(r'^events/(?P<pk>[^/]+)/join/$', EventJoinView.as_view(resource=EventResource)),
     url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(resource=EventResource)),
+    url(r'^events/(?P<pk>[^/]+)/edit/$', EventUpdate.as_view()), # Form to edit
+    url(r'^events/(?P<pk>[^/]+)/delete/$', EventDelete.as_view()), # Form to delete
 )
 
 urlpatterns += staticfiles_urlpatterns()
