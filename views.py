@@ -8,8 +8,3 @@ def home(request):
 
 def register_view(request):
     return render_to_response('signup.html')
-
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect('/')

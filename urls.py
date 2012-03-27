@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'DjangoFlock.views.home', name='home'),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
-    url(r'^logout/$', 'DjangoFlock.views.logout_view'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', {'template_name': 'logout.html'}),
     # url(r'^DjangoFlock/', include('DjangoFlock.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

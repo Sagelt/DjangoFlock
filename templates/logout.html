@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %} | Logged Out{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(function(){
+    $('form input:first').focus();
+});
+</script>
+{% endblock %}
+
+{% block main %}
+{% if not user.is_authenticated %}{# Should always be the case #}
+	<h1>Logged out</h1>
+	<p>Yup, you're logged out.</p>
+{% endif %}
+{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Log In{% endblock %}
+{% block title %} | Log In{% endblock %}
 
 {% block js %}
 <script type="text/javascript">
@@ -21,6 +21,7 @@ $(function(){
     	<input type="checkbox"> Remember me
   	</label>
   	{% csrf_token %}
+	<input type="hidden" name="next" value="{{ next }}" />
 	<button type='submit' class='btn'>log in</button>
 </form>
 {% endblock %}
