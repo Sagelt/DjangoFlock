@@ -6,7 +6,7 @@ from djangorestframework.views import InstanceModelView, ListOrCreateModelView
 from events.resources import GameResource, EventResource, PublisherResource
 from events.views import EventRoot, EventModelView, GameRoot, GameModelView, \
     EventJoinView, EventLeaveView, GameCreate, GameUpdate, GameDelete, EventCreate, \
-    EventUpdate, EventDelete
+    EventUpdate, EventDelete, PublisherRoot, PublisherModelView
 
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
@@ -21,9 +21,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
-    url(r'^publishers/$', ListOrCreateModelView.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
+    url(r'^publishers/$', PublisherRoot.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
     #url(r'^publishers/new/$', GameCreate.as_view()), # Form to create
-    url(r'^publishers/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
+    url(r'^publishers/(?P<pk>[^/]+)/$', PublisherModelView.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
     #url(r'^publishers/(?P<pk>[^/]+)/edit/$', GameUpdate.as_view()), # Form to edit
     #url(r'^publishers/(?P<pk>[^/]+)/delete/$', GameDelete.as_view()), # Form to delete
     

@@ -20,6 +20,22 @@ from events.resources import EventResource
 
 class HTMLRenderer(TemplateRenderer):
     media_type = 'text/html'
+    
+class PublisherListHTMLRenderer(HTMLRenderer):
+    template = 'events/publisher_list.html'
+
+class PublisherInstanceHTMLRenderer(HTMLRenderer):
+    template = 'events/publisher.html'
+
+class PublisherRoot(ListOrCreateModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (PublisherListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
+
+class PublisherModelView(InstanceModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (PublisherInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
 
 class GameListHTMLRenderer(HTMLRenderer):
     template = 'events/game_list.html'
@@ -55,6 +71,16 @@ class GameDelete(DeleteView):
     def dispatch(self, *args, **kwargs):
         return super(GameDelete, self).dispatch(*args, **kwargs)
 
+class GameRoot(ListOrCreateModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (GameListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
+
+class GameModelView(InstanceModelView):
+    permissions = (IsUserOrIsAnonReadOnly, )
+    renderers = (GameInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
+                 DocumentingPlainTextRenderer)
+
 class EventListHTMLRenderer(HTMLRenderer):
     template = 'events/event_list.html'
 
@@ -73,16 +99,6 @@ class EventInstanceHTMLRenderer(HTMLRenderer):
         players = [u['username'] for u in obj['players']]
         context = RequestContext(self.view.request, {'object': obj, 'players': players})
         return template.render(context)
-
-class GameRoot(ListOrCreateModelView):
-    permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (GameListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
-
-class GameModelView(InstanceModelView):
-    permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (GameInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
 
 class EventRoot(ListOrCreateModelView):
     form = EventForm
