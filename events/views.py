@@ -29,13 +29,13 @@ class PublisherInstanceHTMLRenderer(HTMLRenderer):
 
 class PublisherRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (PublisherListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, PublisherListHTMLRenderer, XMLRenderer)
 
 class PublisherModelView(InstanceModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (PublisherInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, PublisherInstanceHTMLRenderer, XMLRenderer)
 
 class GameListHTMLRenderer(HTMLRenderer):
     template = 'events/game_list.html'
@@ -73,13 +73,13 @@ class GameDelete(DeleteView):
 
 class GameRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (GameListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, GameListHTMLRenderer, XMLRenderer)
 
 class GameModelView(InstanceModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (GameInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, GameInstanceHTMLRenderer, XMLRenderer)
 
 class EventListHTMLRenderer(HTMLRenderer):
     template = 'events/event_list.html'
@@ -103,8 +103,8 @@ class EventInstanceHTMLRenderer(HTMLRenderer):
 class EventRoot(ListOrCreateModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (EventListHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, EventListHTMLRenderer, XMLRenderer)
     
     def post(self, request):
         """
@@ -133,8 +133,8 @@ class EventRoot(ListOrCreateModelView):
 class EventModelView(InstanceModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (EventInstanceHTMLRenderer, JSONRenderer, JSONPRenderer, XMLRenderer,
-                 DocumentingPlainTextRenderer)
+    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
+                 JSONPRenderer, EventInstanceHTMLRenderer, XMLRenderer)
     
     def delete(self, request, pk):
         event = get_object_or_404(Event, pk=pk)
