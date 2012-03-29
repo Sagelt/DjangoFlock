@@ -4,7 +4,7 @@ from events.models import Publisher, Game, Event
 class PublisherForm(forms.ModelForm):
     class Meta:
         model = Publisher
-        fields = ('name', 'publisher_url')
+        #fields = ('name', 'publisher_url')
 
 class GameForm(forms.ModelForm):
     class Meta:
@@ -23,11 +23,13 @@ class EventForm(forms.ModelForm):
         if start >= end:
             msg = u"End time must come after start time."
             self._errors['end'] = self.error_class([msg])
-            del cleaned_data['end']
+            if 'end' in cleaned_data:
+                del cleaned_data['end']
         min = cleaned_data.get('min')
         max = cleaned_data.get('max')
         if max < min:
             msg = u"Max may not be less than min."
             self._errors['max'] = self.error_class([msg])
-            del cleaned_data['max']
+            if 'max' in cleaned_data:
+                del cleaned_data['max']
         return cleaned_data

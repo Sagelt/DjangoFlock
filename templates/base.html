@@ -18,6 +18,7 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/static/css/bootstrap.css" />
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/humanity/jquery-ui.css" />
     <link rel="stylesheet" href="/static/css/style.css" />
     <style type="text/css">
       body {
@@ -30,6 +31,7 @@
 
     <!-- Javascript -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
     <script type="text/javascript" src="/static/js/modernizr.js"></script>
     {% block js %}
     {% endblock %}
@@ -77,7 +79,17 @@
 	<hr />
 	<footer>
 	<div class="container">
-	    <p><small>&copy; 2012 Transneptune Games</small></p>
+		<div class="row">
+			<div class="span4">
+		    	<p style="text-align: left;"><small>&copy; 2012 Transneptune Games</small></p>
+		  	</div>
+		  	<div class="span8">
+		    <p style="text-align: right;"><a href="http://djangopony.com/" class="ponybadge" title="Magic! Ponies! Django! Whee!">
+		    	<img src="http://media.djangopony.com/img/small/badge.png" width="105" height="32"
+					 alt="pony powered"></a>
+			</p>
+			</div>
+		</div>
 	</div>
 	</footer>
 </div>

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext, loader
 from django.utils.decorators import method_decorator
@@ -47,11 +48,12 @@ class GameCreate(CreateView):
     form_class = GameForm
     template_name = 'events/game_create.html'
     success_url = "/games/%(id)s/"
+    model = Game
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(GameCreate, self).dispatch(*args, **kwargs)
-
+    
 class GameUpdate(UpdateView):
     form_class = GameForm
     template_name = 'events/game_update.html'
