@@ -3,65 +3,43 @@
 {% block title %} | Events | Update{% endblock %}
 
 {% block js %}
+<script type="text/javascript" src="/static/js/event-time-picker.js"></script>
 <script type="text/javascript">
-function format_time(hour) {
-	function decimal_to_minutes(min) {
-		var min = min * 60;
-		if (min < 10) {
-			min = "0" + min;
-		}
-		return min;
-	}
-	function split_hours_and_minutes(time) {
-		var h = parseInt(time);
-		var m = time - h;
-		return Array(h, m);
-	}
-	if (hour < 12) {
-		minute = decimal_to_minutes(hour - parseInt(hour));
-		hour = parseInt(hour);
-		return hour + ":" + minute + "am";
-	} else {
-		hour = hour - 12;
-		minute = decimal_to_minutes(hour - parseInt(hour));
-		hour = parseInt(hour);
-		if (hour == 0) {
-			hour = 12;
-		}
-		return hour + ":" + minute + "pm";
-	}
-}
 $(function(){
     $('form select:first').focus();
-    $('#id_start, #id_end').datepicker({
-    	dateFormat: 'yy-mm-dd',
-    	showButtonPanel:  true
-    });
-    $('#duration').slider({
-    	range: true,
-    	min: 0,
-    	max: 24,
-    	values: [14, 16],
-    	step: 0.5,
-		slide: function(event, ui) {
-			$("#amount").text(format_time(ui.values[0]) + " to " + format_time(ui.values[1]) + " (" + (parseFloat(ui.values[1]) - parseFloat(ui.values[0])) + " hours).");
-		}
-    });
-	$("#amount").text(format_time($("#duration").slider("values", 0)) + " to " + format_time($("#duration").slider("values", 1)) + " (" + (parseFloat($("#duration").slider("values", 1)) - parseFloat($("#duration").slider("values", 0))) + " hours).");
 });
 </script>
 {% endblock %}
 
 {% block main %}
 <form method='post' action='' class='form well'>
-    {% for field in form %}
-        {{ field.label_tag }}
-		{{ field }}
-        {% for error in field.errors %}
-		<div class="alert alert-error">{{ error }}</div>
-		{% empty %}{% endfor %}
-    {% endfor %}
+	{{ form.game.label_tag }}
+	{{ form.game }}
+	{% for error in form.game.errors %}
+	<div class="alert alert-error">{{ error }}</div>
+	{% empty %}{% endfor %}
+	{{ form.start }}
+	{% for error in form.start.errors %}
+	<div class="alert alert-error">{{ error }}</div>
+	{% empty %}{% endfor %}
+	{{ form.end }}
+	{% for error in form.end.errors %}
+	<div class="alert alert-error">{{ error }}</div>
+	{% empty %}{% endfor %}
+	{{ form.min.label_tag }}
+	{{ form.min }}
+	{% for error in form.min.errors %}
+	<div class="alert alert-error">{{ error }}</div>
+	{% empty %}{% endfor %}
+	{{ form.max.label_tag }}
+	{{ form.max }}
+	{% for error in form.max.errors %}
+	<div class="alert alert-error">{{ error }}</div>
+	{% empty %}{% endfor %}
+
     {% csrf_token %}
+	<label for="id_day">Day</label>
+    <input type="text" id="id_day" name="day" />
     <div id="duration"></div>
     <div id="amount"></div>
 	<br /><button type='submit' class='btn'>update</button>
