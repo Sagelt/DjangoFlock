@@ -7,6 +7,8 @@
 <script type="text/javascript">
 $(function(){
     $('form select:first').focus();
+    $('#duration').slider('option', 'values', [14, 16]);
+    set_amount_and_hidden_fields(); // Defined in event-time-picker.js
 });
 </script>
 {% endblock %}

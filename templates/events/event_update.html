@@ -6,7 +6,24 @@
 <script type="text/javascript" src="/static/js/event-time-picker.js"></script>
 <script type="text/javascript">
 $(function(){
+	var start = new Date("{{ form.start.value|date:'Y-m-d H:i' }}");
+	var end = new Date("{{ form.end.value|date:'Y-m-d H:i' }}");
     $('form select:first').focus();
+    $('#duration').slider('values', [start.getHours() + (start.getMinutes() / 60), end.getHours() + (end.getMinutes() / 60)]);
+    var month = start.getMonth() + 1;
+    if (month < 10) {
+    	month = "0" + month;
+    } else {
+    	month = String(month);
+    }
+    var date = start.getDate();
+    if (date < 10) {
+    	date = "0" + date;
+    } else {
+    	date = String(date);
+    }
+    $('#id_day').val(start.getFullYear() + '-' + month + '-' + date);
+    set_amount_and_hidden_fields(); // Defined in event-time-picker.js
 });
 </script>
 {% endblock %}

@@ -65,9 +65,8 @@ $(function(){
         range: true,
         min: 0,
         max: 24,
-        values: [14, 16],
         step: 0.5,
+        values: [14, 16],
         slide: set_amount_and_hidden_fields
     });
-    set_amount_and_hidden_fields();
 });
