@@ -8,7 +8,7 @@ from events.exceptions import EventFullException, OwnEventException
 
 class Publisher(models.Model):
     name = models.CharField(max_length=50)
-    publisher_url = models.URLField()
+    publisher_url = models.URLField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     def __str__(self):
@@ -16,7 +16,7 @@ class Publisher(models.Model):
 
 class Game(models.Model):
     name = models.CharField(max_length=50)
-    edition = models.CharField(max_length=50)
+    edition = models.CharField(max_length=50, blank=True)
     publisher = models.ForeignKey(Publisher)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
