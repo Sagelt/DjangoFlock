@@ -23,7 +23,7 @@ class EventResource(ModelResource):
     fields = (('host', UserResource),
               ('players', UserResource),
               ('game', GameResource),
-              'start', 'end', 'min', 'max', 'join', 'leave', 'url', 'duration')
+              'title', 'start', 'end', 'min', 'max', 'join', 'leave', 'url', 'duration')
     
     def join(self, instance):
         # TODO How hackish is this?

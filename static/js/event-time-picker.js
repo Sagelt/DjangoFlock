@@ -55,7 +55,7 @@ function set_amount_and_hidden_fields() {
 	$("#amount").text(format_time($("#duration").slider("values", 0)) + " to " + format_time($("#duration").slider("values", 1)) + " (" + (end_time - start_time) + " hours).");
 }
 $(function(){
-	$('#id_start, #id_end').hide()
+	$('#id_start, #id_end').hide();
     $('#id_day').datepicker({
         dateFormat: 'yy-mm-dd',
         defaultDate: 0

@@ -2,17 +2,38 @@
 
 {% block title %} | Events{% endblock %}
 
-{% block css %}
+{% block js %}
+<link rel='stylesheet' type='text/css' href='/static/js/fullcalendar/fullcalendar.css' />
+<script type='text/javascript' src='/static/js/fullcalendar/fullcalendar.min.js'></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#calendar').fullCalendar({
+		eventSources: [{
+			url: '/events/?format=json',
+			editable: false,
+			allDayDefault: false
+		}],
+		header: {
+			left: 'title',
+			center: 'month,agendaWeek,agendaDay',
+			right: 'today prev,next'
+		},
+		firstDay: 1,
+		height: ($(window).height() - 230), // This is to account for the header and footer size.
+		
+	});
+});
+</script>
 {% endblock %}
 
 {% block main %}
-<h1>Current Events</h1>
-<ul>
-	{% for event in object %}
-	<li><a href="{{ event.url }}">{{ event.game.name }} with {{ event.host.username }}</a></li>
-	{% endfor %}
-</ul>
-{% if user.is_authenticated %}
-<div><a class="btn btn-primary" href="new/">Create</a></div>
-{% endif %}
+<div class="row">
+	<div class="span8"><h1>Current Events</h1></div>
+	{% if user.is_authenticated %}
+	<div class="span4" style="text-align: right;"><a class="btn btn-primary" href="new/">Create</a></div>
+	{% endif %}
+</div>
+<div id="calendar">
+	{# TODO: this doesn't degrade gracefully; if someone has no Javascript, they get no links to events. #}
+</div>
 {% endblock %}

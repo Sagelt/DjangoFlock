@@ -237,5 +237,5 @@ class EventDelete(DeleteView):
         event = Event.objects.get(pk=kwargs['pk']) # Should exist. Will server error if not.
         request = args[0] # Should be the request, will server error on next line if not.
         if event.host == request.user:
-            return super(EventUpdate, self).dispatch(*args, **kwargs)
+            return super(EventDelete, self).dispatch(*args, **kwargs)
         raise PermissionDenied

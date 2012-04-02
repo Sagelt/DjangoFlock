@@ -67,3 +67,7 @@ class Event(models.Model):
     @property
     def duration(self):
         return self.end - self.start
+    
+    @property
+    def title(self):
+        return "%s with %s" % (self.game.name, self.host.username)
