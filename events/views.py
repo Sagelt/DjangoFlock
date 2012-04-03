@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -18,6 +19,7 @@ from events.exceptions import EventFullException, OwnEventException
 from events.forms import GameForm, EventForm
 from events.models import Event, Game, Publisher
 from events.resources import EventResource
+from datetime import datetime, MAXYEAR
 
 class HTMLRenderer(TemplateRenderer):
     media_type = 'text/html'
@@ -107,6 +109,35 @@ class EventRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
     renderers = (DocumentingPlainTextRenderer, JSONRenderer,
                  JSONPRenderer, EventListHTMLRenderer, XMLRenderer)
+    
+    def get(self, request):
+        result = super(EventRoot, self).get(request)
+        if 'start' in request.GET or 'end' in request.GET:
+            try:
+                start = datetime.fromtimestamp(int(request.GET['start']))
+            except (KeyError, ValueError):
+                start = datetime.fromtimestamp(0)
+            try:
+                end = datetime.fromtimestamp(int(request.GET['end']))
+            except (KeyError, ValueError):
+                end = datetime(MAXYEAR, 1, 1)
+            result = result.filter(start__gt=start, end__lt=end)
+        if 'player' in request.GET:
+            try:
+                user = User.objects.get(username=request.GET['player'])
+            except User.DoesNotExist:
+                user = None
+            if user is not None:
+                result = result.filter(players=user)
+        if 'host' in request.GET:
+            try:
+                user = User.objects.get(username=request.GET['host'])
+            except User.DoesNotExist:
+                user = None
+            if user is not None:
+                result = result.filter(host=user)
+        return result
+            
     
     def post(self, request):
         """

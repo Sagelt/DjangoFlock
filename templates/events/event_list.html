@@ -9,7 +9,19 @@
 $(document).ready(function(){
 	$('#calendar').fullCalendar({
 		eventSources: [{
-			url: '/events/?format=json',
+			{% if 'host' in request.GET %}
+				{% if 'player' in request.GET %}
+				url: '/events/?format=json&host={{ request.GET.host }}&player={{ request.GET.player }}',
+				{% else %}
+				url: '/events/?format=json&host={{ request.GET.host }}',
+				{% endif %}
+			{% else %}
+				{% if 'player' in request.GET %}
+				url: '/events/?format=json&player={{ request.GET.player }}',
+				{% else %}
+				url: '/events/?format=json',
+				{% endif %}
+			{% endif %}
 			editable: false,
 			allDayDefault: false
 		}],
