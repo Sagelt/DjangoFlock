@@ -2,8 +2,8 @@
 Custom exceptions and errors live here.
 """
 
-class EventFullException(Exception):
+class EventFullError(Exception):
     pass
 
-class OwnEventException(Exception):
+class OwnEventError(Exception):
     pass

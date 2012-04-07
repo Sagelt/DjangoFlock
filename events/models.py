@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
-from events.exceptions import EventFullException, OwnEventException
+from events.exceptions import EventFullError, OwnEventError
 
 # Create your models here.
 
@@ -43,9 +43,9 @@ class Event(models.Model):
         if not user.is_authenticated():
             raise ValueError
         if user == self.host:
-            raise OwnEventException
+            raise OwnEventError
         if len(self.players.all()) >= self.max:
-            raise EventFullException
+            raise EventFullError
         if user in self.players.all():
             return
         self.players.add(user)
