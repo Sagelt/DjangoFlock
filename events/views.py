@@ -15,7 +15,7 @@ from djangorestframework.renderers import TemplateRenderer, JSONRenderer, \
 from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
-from events.exceptions import EventFullException, OwnEventException
+from events.exceptions import EventFullError, OwnEventError
 from events.forms import GameForm, EventForm
 from events.models import Event, Game, Publisher
 from events.resources import EventResource
@@ -200,9 +200,9 @@ class EventJoinView(View):
             event.add_player(user)
             return Response(status.HTTP_201_CREATED,
                             headers={'Location': reverse('event-instance', args=[event.id])})
-        except OwnEventException:
+        except OwnEventError:
             return Response(status.HTTP_403_FORBIDDEN, content='You own this event.')
-        except EventFullException:
+        except EventFullError:
             return Response(status.HTTP_403_FORBIDDEN, content='This event is full.')
         except ValueError:
             return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to join this event.')
