@@ -21,94 +21,21 @@ from events.models import Event, Game, Publisher
 from events.resources import EventResource
 from datetime import datetime, MAXYEAR
 
-class HTMLRenderer(TemplateRenderer):
-    media_type = 'text/html'
-    
-class PublisherListHTMLRenderer(HTMLRenderer):
-    template = 'events/publisher_list.html'
-
-class PublisherInstanceHTMLRenderer(HTMLRenderer):
-    template = 'events/publisher.html'
-
 class PublisherRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, PublisherListHTMLRenderer, XMLRenderer)
 
 class PublisherModelView(InstanceModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, PublisherInstanceHTMLRenderer, XMLRenderer)
-
-class GameListHTMLRenderer(HTMLRenderer):
-    template = 'events/game_list.html'
-
-class GameInstanceHTMLRenderer(HTMLRenderer):
-    template = 'events/game.html'
-
-class GameCreate(CreateView):
-    form_class = GameForm
-    template_name = 'events/game_create.html'
-    success_url = "/games/%(id)s/"
-    model = Game
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(GameCreate, self).dispatch(*args, **kwargs)
-    
-class GameUpdate(UpdateView):
-    form_class = GameForm
-    template_name = 'events/game_update.html'
-    success_url = '/games/%(id)s/'
-    model = Game
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(GameUpdate, self).dispatch(*args, **kwargs)
-    
-class GameDelete(DeleteView):
-    template_name = 'events/game_delete.html'
-    model = Game
-    success_url = '/games/'
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(GameDelete, self).dispatch(*args, **kwargs)
 
 class GameRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, GameListHTMLRenderer, XMLRenderer)
 
 class GameModelView(InstanceModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, GameInstanceHTMLRenderer, XMLRenderer)
-
-class EventListHTMLRenderer(HTMLRenderer):
-    template = 'events/event_list.html'
-
-class EventInstanceHTMLRenderer(HTMLRenderer):
-    template = 'events/event.html'
-
-    def render(self, obj=None, media_type=None):
-        """
-        Renders *obj* using the :attr:`template` specified on the class.
-        
-        Injects another variable into the context. 
-        """
-        if obj is None:
-            return ''
-        template = loader.get_template(self.template)
-        players = [u['username'] for u in obj['players']]
-        context = RequestContext(self.view.request, {'object': obj, 'players': players})
-        return template.render(context)
 
 class EventRoot(ListOrCreateModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, EventListHTMLRenderer, XMLRenderer)
     
     def get(self, request):
         result = super(EventRoot, self).get(request)
@@ -166,8 +93,6 @@ class EventRoot(ListOrCreateModelView):
 class EventModelView(InstanceModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    renderers = (DocumentingPlainTextRenderer, JSONRenderer,
-                 JSONPRenderer, EventInstanceHTMLRenderer, XMLRenderer)
     
     def delete(self, request, pk):
         event = get_object_or_404(Event, pk=pk)
@@ -222,51 +147,3 @@ class EventLeaveView(View):
         event = get_object_or_404(Event, pk=pk)
         event.remove_player(user)
         return Response(status.HTTP_204_NO_CONTENT)
-    
-class EventCreate(CreateView):
-    form_class = EventForm
-    template_name = 'events/event_create.html'
-    success_url = "/events/%(id)s/"
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(EventCreate, self).dispatch(*args, **kwargs)
-    
-    def get_form_kwargs(self, **kwargs):
-        """
-        Extends `get_form_kwargs` to add an instance variable with the host set,
-        since this is not a form-submittable part of an Event. See the note at
-        https://docs.djangoproject.com/en/dev/topics/forms/modelforms/#using-a
-        -subset-of-fields-on-the-form for more information.
-        """
-        kwargs = super(EventCreate, self).get_form_kwargs(**kwargs)
-        event = Event(host=self.request.user)
-        kwargs['instance'] = event
-        return kwargs
-
-class EventUpdate(UpdateView):
-    form_class = EventForm
-    template_name = 'events/event_update.html'
-    success_url = '/events/%(id)s/'
-    model = Event
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        event = Event.objects.get(pk=kwargs['pk']) # Should exist. Will server error if not.
-        request = args[0] # Should be the request, will server error on next line if not.
-        if event.host == request.user:
-            return super(EventUpdate, self).dispatch(*args, **kwargs)
-        raise PermissionDenied
-    
-class EventDelete(DeleteView):
-    template_name = 'events/event_delete.html'
-    model = Event
-    success_url = '/events/'
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        event = Event.objects.get(pk=kwargs['pk']) # Should exist. Will server error if not.
-        request = args[0] # Should be the request, will server error on next line if not.
-        if event.host == request.user:
-            return super(EventDelete, self).dispatch(*args, **kwargs)
-        raise PermissionDenied

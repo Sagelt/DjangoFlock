@@ -1,12 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from djangorestframework.permissions import IsUserOrIsAnonReadOnly
-from djangorestframework.views import InstanceModelView, ListOrCreateModelView
-from events.resources import GameResource, EventResource, PublisherResource
-from events.views import EventRoot, EventModelView, GameRoot, GameModelView, \
-    EventJoinView, EventLeaveView, GameCreate, GameUpdate, GameDelete, EventCreate, \
-    EventUpdate, EventDelete, PublisherRoot, PublisherModelView
 
 # Uncomment the next two lines to enable the admin:
 admin.autodiscover()
@@ -20,26 +14,13 @@ urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    
-    url(r'^publishers/$', PublisherRoot.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
-    #url(r'^publishers/new/$', GameCreate.as_view()), # Form to create
-    url(r'^publishers/(?P<pk>[^/]+)/$', PublisherModelView.as_view(resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, ))),
-    #url(r'^publishers/(?P<pk>[^/]+)/edit/$', GameUpdate.as_view()), # Form to edit
-    #url(r'^publishers/(?P<pk>[^/]+)/delete/$', GameDelete.as_view()), # Form to delete
-    
-    url(r'^games/$', GameRoot.as_view(resource=GameResource)),
-    url(r'^games/new/$', GameCreate.as_view()), # Form to create
-    url(r'^games/(?P<pk>[^/]+)/$', GameModelView.as_view(resource=GameResource)),
-    url(r'^games/(?P<pk>[^/]+)/edit/$', GameUpdate.as_view()), # Form to edit
-    url(r'^games/(?P<pk>[^/]+)/delete/$', GameDelete.as_view()), # Form to delete
 
-    url(r'^events/$', EventRoot.as_view(resource=EventResource)),
-    url(r'^events/new/$', EventCreate.as_view()), # Form to create
-    url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(resource=EventResource), name='event-instance'),
-    url(r'^events/(?P<pk>[^/]+)/join/$', EventJoinView.as_view(resource=EventResource)),
-    url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(resource=EventResource)),
-    url(r'^events/(?P<pk>[^/]+)/edit/$', EventUpdate.as_view()), # Form to edit
-    url(r'^events/(?P<pk>[^/]+)/delete/$', EventDelete.as_view()), # Form to delete
+    # REST API
+    # @todo: Alias ^api/ to ^api1/
+    url(r'^api1/', include('events.urls')),
+
+    # HTML forms for accessing the REST API.
+    # @todo
 )
 
 urlpatterns += staticfiles_urlpatterns()
