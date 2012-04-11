@@ -8,3 +8,21 @@ def home(request):
 
 def register_view(request):
     return render_to_response('signup.html')
+
+def publishers_list(request):
+    pass
+
+def publishers_instance(request, pk):
+    pass
+
+def games_list(request):
+    pass
+
+def games_instance(request, pk):
+    pass
+
+def events_list(request):
+    pass
+
+def events_instance(request, pk):
+    pass
