@@ -6,3 +6,4 @@ include
 lib
 .project
 .pydevproject
+settings_local.py

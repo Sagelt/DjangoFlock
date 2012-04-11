@@ -56,7 +56,7 @@ class EventTest(TestCase):
         """
         This should throw an OwnEventError if the user is the host.
         """
-        user = User.objects.get(username='kit')
+        user = self.event.host
         self.assertRaises(OwnEventError, lambda: self.event.add_player(user))
         
     def test_add_player_event_full(self):
@@ -161,3 +161,28 @@ class EventTest(TestCase):
         self.event.end = now + end_delta
         self.event.save()
         self.assertTrue(self.event.is_ongoing())
+
+class PublisherViewTest(TestCase):
+    fixture = ['event-test.json']
+    
+    def setUp(self):
+        pass
+    
+    def test_create(self):
+        publisher = Publisher(name='Test Publisher')
+        self.assertNotIn(publisher, Publisher.objects.all(), 
+            "Test precondition failed: %s exists in fixture %s."
+             % (publisher, self.fixture))
+        # TODO finish this test.
+    
+    def test_list(self):
+        pass
+    
+    def test_retrieve(self):
+        pass
+    
+    def test_update(self):
+        pass
+    
+    def test_delete(self):
+        pass
