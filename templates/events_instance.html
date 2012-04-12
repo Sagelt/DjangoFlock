@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %} | Events | {{ event.title }}{% endblock %}
+
+{% block js %}{% endblock %}
+
+{% block css %}
+<style type="text/css">
+	.no-players {
+		font-style: italic;
+	}
+</style>
+{% endblock %}
+
+{% block main %}
+<h1>{{ event.title }}</h1>
+<ul>
+	<li>Min: {{ event.min }}</li>
+	<li>Max: {{ event.max }}</li>
+	<li>Start: {{ event.start }}</li>
+	<li>End: {{ event.end }}</li>
+	<li>Duration: {{ event.duration }}</li>
+	<li>Game: <a href="/games/{{ event.game.pk }}/">{{ event.game.name }}</a></li>
+	<li>Players:
+	<ul>
+	{% for player in event.players.all %}
+		<li>{{ player.name }}</li>
+	{% empty %}
+		<li class="no-players">No players.</li>
+	{% endfor %}
+	</ul>
+	</li>
+</ul>
+{% endblock %}
