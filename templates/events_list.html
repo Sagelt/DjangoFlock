@@ -2,7 +2,48 @@
 
 {% block title %} | Events{% endblock %}
 
-{% block js %}{% endblock %}
+{% block css %}
+<link rel='stylesheet' type='text/css' href='/static/js/fullcalendar/fullcalendar.css' />
+{% endblock %}
+
+{% block js %}
+<script type='text/javascript' src='/static/js/fullcalendar/fullcalendar.min.js'></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	/* @todo: show this only if non-mobile browsing.
+	$('#calendar').fullCalendar({
+		eventSources: [{
+			url: '/api/events/?format=json',
+			editable: false,
+			allDayDefault: false
+		}],
+		header: {
+			left: 'title',
+			center: 'month,agendaWeek,agendaDay',
+			right: 'today prev,next'
+		},
+		firstDay: 1,
+		height: ($(window).height() - 230), // This is to account for the header and footer size.
+	});
+	*/
+	$.ajax({
+		url: '/api/events/',
+		dataType: "json",
+		beforeSend: function() {
+			$('#calendar').html("Loading…");
+		},
+		success: function(data, textStatus, jqXHR) {
+			for (event in data) {
+				var 
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			$('#calendar').html("Error loading data.");
+		}
+	});
+});
+</script>
+{% endblock %}
 
 {% block main %} <h1>Events</h1>
 <p>
@@ -13,4 +54,5 @@
 	In mobile view, it should show a nice SenchaTouch-style list, with headers
 	by the hour.
 </p>
+<div id="calendar"></div>
 {% endblock %}
