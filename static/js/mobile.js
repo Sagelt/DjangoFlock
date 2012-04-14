@@ -1,23 +1,29 @@
+/*
+ * Event model. Grabs the instances from the REST API.
+ */
 Ext.define('Event', {
 	extend: 'Ext.data.Model',
 	config: {
-		fields: ['title', 'start']
+		fields: ['id', 'title', 'start', 'duration', 'url'],
+		proxy: {
+			type: 'rest',
+			url: '/api/events/',
+			format: '?format=json',
+			reader: {
+				type: 'json'
+			}
+		}
 	}
 });
 
 Ext.create('Ext.data.Store', {
-	id: 'ListStore',
+	id: 'EventStore',
 	model: 'Event',
 	sorters: 'start',
 	grouper: function(record) {
 		return record.get('start').hour;
 	},
-	data: [
-		{'title': "Fiasco with Kit", 'start': new Date(2012, 04, 13, 14, 00)},
-		{'title': "Fiasco with Kit", 'start': new Date(2012, 04, 13, 16, 00)},
-		{'title': "Apocalypse World with John", 'start': new Date(2012, 04, 13, 14, 00)},
-		{'title': "Becoming Heroes with Austin", 'start': new Date(2012, 04, 13, 15, 00)}
-	]
+	autoLoad: true
 });
 
 Ext.application({
@@ -42,10 +48,9 @@ Ext.application({
 					width: Ext.os.deviceType == 'Phone' ? null : 300,
 					height: Ext.os.deviceType == 'Phone' ? null : 500,
 					xtype: 'list',
-					store: 'ListStore',
-					itemTpl: '<div style="font-weight: bold;">{ title }</div><div>{ start }</div>',
-					grouped: true,
-					indexBar: true
+					store: 'EventStore',
+					itemTpl: '<a href="{ url }" style="text-decoration: none;"><div style="font-weight: bold;">{ title }</div><div style="font-style: italic">{ start:date("g:i A") }, { duration } long</div></a>',
+					grouped: true
 				}]
 			},
 			//this is the new item
