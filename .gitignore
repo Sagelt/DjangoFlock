@@ -7,3 +7,5 @@ lib
 .project
 .pydevproject
 settings_local.py
+# Just, stop getting in my face, Sencha.
+static/js/sencha/sencha-touch-2.0.0-commercial/
