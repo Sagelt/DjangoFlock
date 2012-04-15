@@ -5,22 +5,22 @@ from events.models import Game, Event, Publisher
 class UserResource(ModelResource):
     model = User
     ordering = ('username', )
-    fields = ('username', 'first_name', 'last_name')
+    fields = ('id', 'username', 'first_name', 'last_name')
 
 class PublisherResource(ModelResource):
     model = Publisher
     ordering = ('name', )
-    fields = ('name', 'publisher_url', 'url')
+    fields = ('id', 'name', 'publisher_url', 'url')
 
 class GameResource(ModelResource):
     model = Game
     ordering = ('name', )
-    fields = ('name', 'edition', ('publisher', PublisherResource), 'url')
+    fields = ('id', 'name', 'edition', ('publisher', PublisherResource), 'url')
     
 class EventResource(ModelResource):
     model = Event
     ordering = ('start', )
-    fields = (('host', UserResource),
+    fields = ('id', ('host', UserResource),
               ('players', UserResource),
               ('game', GameResource),
               'title', 'start', 'end', 'min', 'max', 'join', 'leave', 'url', 'duration')

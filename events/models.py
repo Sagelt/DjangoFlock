@@ -53,7 +53,8 @@ class Event(models.Model):
     
     def remove_player(self, user):
         """
-        This method is idempotent; there's no problem with removing a user who's not present.
+        This method is idempotent; there's no problem with removing a user
+        who's not present.
         """
         self.players.remove(user)
         self.save()
@@ -66,7 +67,14 @@ class Event(models.Model):
     
     @property
     def duration(self):
-        return self.end - self.start
+        """
+        This used to return a timedelta. Now it returns a float of the number
+        of hours of the event.
+        
+        Timedelta objects store days and seconds, so you have to take the
+        seconds and divide by 60 * 60.
+        """
+        return (self.end - self.start).seconds / float(60 * 60)
     
     @property
     def title(self):

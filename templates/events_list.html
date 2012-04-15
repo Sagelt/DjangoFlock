@@ -10,7 +10,6 @@
 <script type='text/javascript' src='/static/js/fullcalendar/fullcalendar.min.js'></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	/* @todo: show this only if non-mobile browsing.
 	$('#calendar').fullCalendar({
 		eventSources: [{
 			url: '/api/events/?format=json',
@@ -23,36 +22,18 @@ $(document).ready(function() {
 			right: 'today prev,next'
 		},
 		firstDay: 1,
-		height: ($(window).height() - 230), // This is to account for the header and footer size.
-	});
-	*/
-	$.ajax({
-		url: '/api/events/',
-		dataType: "json",
-		beforeSend: function() {
-			$('#calendar').html("Loading…");
-		},
-		success: function(data, textStatus, jqXHR) {
-			for (event in data) {
-				var 
-			}
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-			$('#calendar').html("Error loading data.");
-		}
+		height: ($(window).height() - 250), // This is to account for the header and footer size.
+		defaultView: 'agendaDay'
 	});
 });
 </script>
 {% endblock %}
 
-{% block main %} <h1>Events</h1>
+{% block main %}
+<h1>Events</h1>
 <p>
 	This should call in FullCalendar, and also give controls for filtering by
 	players, location.
-</p>
-<p>
-	In mobile view, it should show a nice SenchaTouch-style list, with headers
-	by the hour.
 </p>
 <div id="calendar"></div>
 {% endblock %}
