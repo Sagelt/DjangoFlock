@@ -27,6 +27,7 @@ class EventTest(TestCase):
     """
     Event models have four methods, without significant interactions.
     """
+    # This fixture should contain users kit, Test{1-10}
     fixtures = ['events-test.json']
     
     def setUp(self):
@@ -35,9 +36,12 @@ class EventTest(TestCase):
         game = Game(name='Test Game', publisher=p)
         game.save()
         host = User.objects.get(username='kit')
+        convention = Convention(name='Test Convention')
+        convention.save()
         self.event = Event(
             host=host,
             game=game,
+            convention=convention,
             min=3,
             max=5,
             start=datetime.strptime("2012-04-01 11:00", "%Y-%m-%d %H:%M"),
@@ -68,14 +72,16 @@ class EventTest(TestCase):
         for i in range(len(self.event.players.all()), self.event.max):
             user = User.objects.get(username='Test%s' % (i + 1))
             self.event.add_player(user)
-        user = User.objects.get(username='blasto')
+        user = User.objects.get(username='Test10')
+        self.assertNotIn(user, self.event.players.all(),
+                         "Test precondition failed: Test10 in event already.")
         self.assertRaises(EventFullError, lambda: self.event.add_player(user))
         
     def test_add_player_already_in(self):
         """
         This should be fine, even if the user's already in the event.
         """
-        user = User.objects.get(username='blasto')
+        user = User.objects.get(username='Test10')
         self.event.add_player(user)
         self.event.add_player(user)
         self.assertIn(user, self.event.players.all())
@@ -84,7 +90,7 @@ class EventTest(TestCase):
         """
         This should add the user to the event otherwise.
         """
-        user = User.objects.get(username='blasto')
+        user = User.objects.get(username='Test10')
         self.event.add_player(user)
         self.assertIn(user, self.event.players.all())
     
@@ -92,7 +98,7 @@ class EventTest(TestCase):
         """
         This should work fine, even if the user was never a player.
         """
-        user = User.objects.get(username='blasto')
+        user = User.objects.get(username='Test10')
         self.assertNotIn(user, self.event.players.all())
         self.event.remove_player(user)
         self.assertNotIn(user, self.event.players.all())
@@ -102,7 +108,7 @@ class EventTest(TestCase):
         This should work fine, assuming that the player was part of the event
         already.
         """
-        user = User.objects.get(username='blasto')
+        user = User.objects.get(username='Test10')
         self.event.add_player(user)
         self.assertIn(user, self.event.players.all())
         self.event.remove_player(user)
