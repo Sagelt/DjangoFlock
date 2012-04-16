@@ -8,8 +8,10 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import User, AnonymousUser
 from django.test import TestCase
 from django.test.client import Client
-from events.models import *
 from events.exceptions import *
+from events.models import *
+import django.utils.simplejson as json
+import time
 
 class PublisherTest(TestCase):
     """
@@ -173,3 +175,119 @@ class ConventionTest(TestCase):
 
 class VoteTest(TestCase):
     pass
+
+class EventViewTest(TestCase):
+    # This fixture should contain users kit, Test{1-10}
+    # @todo: This fixture doesn't stress-test these views at all.
+    # Work on that.
+    fixtures = ['events-test.json']
+    
+    def setUp(self):
+        p = Publisher(name='Test Publisher')
+        p.save()
+        game = Game(name='Test Game', publisher=p)
+        game.save()
+        host = User.objects.get(username='kit')
+        convention = Convention(name='Test Convention')
+        convention.save()
+        self.event = Event(
+            host=host,
+            game=game,
+            convention=convention,
+            min=3,
+            max=5,
+            start=datetime.strptime("2012-04-01 11:00", "%Y-%m-%d %H:%M"),
+            end=datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
+        )
+        self.event.save()
+    
+    def test_filter_start(self):
+        start = datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
+        start_stamp = int(time.mktime(start.timetuple()))
+        response = self.client.get('/api/events/', {'start': start_stamp})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(start__gte=start), map(repr, events))
+    
+    def test_filter_end(self):
+        end = datetime.strptime("2012-04-01 11:00", "%Y-%m-%d %H:%M")
+        end_stamp = int(time.mktime(end.timetuple()))
+        response = self.client.get('/api/events/', {'end': end_stamp})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(end__lte=end), map(repr, events))
+    
+    def test_filter_player(self):
+        filter = User.objects.filter(username='kit')
+        response = self.client.get('/api/events/', {'player': 'kit'})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(players=filter), map(repr, events))
+    
+    def test_filter_player_list(self):
+        filter = User.objects.filter(username__in=['Test1', 'kit'])
+        response = self.client.get('/api/events/', {'player': ['Test1', 'kit']})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(players__in=filter), map(repr, events))
+    
+    def test_filter_host(self):
+        filter = User.objects.filter(username='kit')
+        response = self.client.get('/api/events/', {'host': 'kit'})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(host=filter), map(repr, events))
+    
+    def test_filter_host_list(self):
+        filter = User.objects.filter(username__in=['Test1', 'kit'])
+        response = self.client.get('/api/events/', {'host': ['Test1', 'kit']})
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(host__in=filter), map(repr, events))
+    
+    def test_unfiltered(self):
+        response = self.client.get('/api/events/')
+        events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Event.objects.filter(), map(repr, events))
+
+class VoteViewTest(TestCase):
+    # This fixture should contain users kit, Test{1-10}
+    # @todo: This fixture doesn't stress-test these views at all.
+    # Work on that.
+    fixtures = ['events-test.json']
+    
+    def setUp(self):
+        user = User.objects.get(username='kit')
+        game = Game.objects.get(id=1)
+        vote = Vote(
+            start=datetime.strptime("2012-04-01 11:00", "%Y-%m-%d %H:%M"),
+            end=datetime.strptime("2012-04-01 20:00", "%Y-%m-%d %H:%M"),
+            game=game,
+            user=user
+        )
+        vote.save()
+    
+    def test_unfiltered(self):
+        response = self.client.get('/api/votes/')
+        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Vote.objects.filter(), map(repr, votes))
+    
+    def test_filter_start(self):
+        start = datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
+        start_stamp = int(time.mktime(start.timetuple()))
+        response = self.client.get('/api/votes/', {'start': start_stamp})
+        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Vote.objects.filter(end__gte=start), map(repr, votes))
+    
+    def test_filter_end(self):
+        end = datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
+        end_stamp = int(time.mktime(end.timetuple()))
+        response = self.client.get('/api/votes/', {'end': end_stamp})
+        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Vote.objects.filter(start__lte=end), map(repr, votes))
+    
+    def test_filter_game(self):
+        filter = Game.objects.get(id=1)
+        response = self.client.get('/api/votes/', {'game': 1})
+        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Vote.objects.filter(game=filter), map(repr, votes))
+    
+    def test_filter_game_list(self):
+        filter = Game.objects.get(id__in=[1, 2])
+        response = self.client.get('/api/votes/', {'game': [1, 2]})
+        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Vote.objects.filter(game=filter), map(repr, votes))

@@ -1,4 +1,4 @@
-from datetime import datetime, MAXYEAR
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -34,6 +34,41 @@ class VoteRoot(ListOrCreateModelView):
     permissions = (IsUserOrIsAnonReadOnly, )
     resource = VoteResource
     
+    def get(self, request):
+        """
+        This shows votes-per-game in little hour boxes.
+        
+        It accepts many query parameters:
+         - List of game IDs; if none, all games shown
+         - Start timestamp: all votes that end after this will be included.
+         - End timestamp: all votes that start before this will be included.
+        """
+        kwargs = {}
+        if 'start' in request.GET:
+            try:
+                start = datetime.fromtimestamp(int(request.GET['start']))
+            except (KeyError, ValueError):
+                start = None
+            if start is not None:
+                kwargs['end__gte'] = start
+        if 'end' in request.GET:
+            try:
+                end = datetime.fromtimestamp(int(request.GET['end']))
+            except (KeyError, ValueError):
+                end = None
+            if end is not None:
+                kwargs['start__lte'] = end
+        if 'game' in request.GET:
+            kwargs['game__in'] = []
+            for value in request.GET.getlist('game'):
+                try:
+                    game = Game.objects.get(pk=value)
+                    kwargs['game__in'].append(game)
+                except Game.DoesNotExist:
+                    pass
+        # **kwargs gets passed to a filter on the queryset
+        return super(VoteRoot, self).get(request, **kwargs)
+
     def post(self, request):
         """
         Create new vote.
@@ -68,33 +103,39 @@ class EventRoot(ListOrCreateModelView):
     resource = EventResource
     
     def get(self, request):
-        result = super(EventRoot, self).get(request)
-        if 'start' in request.GET or 'end' in request.GET:
+        kwargs = {}
+        if 'start' in request.GET:
             try:
                 start = datetime.fromtimestamp(int(request.GET['start']))
             except (KeyError, ValueError):
-                start = datetime.fromtimestamp(0)
+                start = None
+            if start is not None:
+                kwargs['start__gte'] = start
+        if 'end' in request.GET:
             try:
                 end = datetime.fromtimestamp(int(request.GET['end']))
             except (KeyError, ValueError):
-                end = datetime(MAXYEAR, 1, 1)
-            result = result.filter(start__gt=start, end__lt=end)
+                end = None
+            if end is not None:
+                kwargs['end__lte'] = end
         if 'player' in request.GET:
-            try:
-                user = User.objects.get(username=request.GET['player'])
-            except User.DoesNotExist:
-                user = None
-            if user is not None:
-                result = result.filter(players=user)
+            kwargs['players__in'] = []
+            for value in request.GET.getlist('player'):
+                try:
+                    user = User.objects.get(username=value)
+                    kwargs['players__in'].append(user)
+                except User.DoesNotExist:
+                    pass
         if 'host' in request.GET:
-            try:
-                user = User.objects.get(username=request.GET['host'])
-            except User.DoesNotExist:
-                user = None
-            if user is not None:
-                result = result.filter(host=user)
+            kwargs['host__in'] = []
+            for value in request.GET.getlist('host'):
+                try:
+                    user = User.objects.get(username=value)
+                    kwargs['host__in'].append(user)
+                except User.DoesNotExist:
+                    pass
+        result = super(EventRoot, self).get(request, **kwargs)
         return result
-            
     
     def post(self, request):
         """

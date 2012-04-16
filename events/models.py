@@ -86,11 +86,15 @@ class Event(models.Model):
     def title(self):
         return "%s with %s" % (self.game.name, self.host.username)
 
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.id) 
+
 class Vote(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
     start = models.DateTimeField()
     end = models.DateTimeField()
+    # @todo: Should this have a Convention foreign key?
     
     @property
     def duration(self):
@@ -102,3 +106,6 @@ class Vote(models.Model):
         seconds and divide by 60 * 60.
         """
         return (self.end - self.start).seconds / float(60 * 60)
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.id) 
