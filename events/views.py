@@ -1,3 +1,4 @@
+from datetime import datetime, MAXYEAR
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -16,26 +17,55 @@ from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
 from events.exceptions import EventFullError, OwnEventError
-from events.forms import GameForm, EventForm
-from events.models import Event, Game, Publisher
-from events.resources import EventResource
-from datetime import datetime, MAXYEAR
+from events.forms import EventForm, VoteForm
+from events.models import Event, Game, Publisher, Convention
+from events.resources import EventResource, VoteResource
 
-class PublisherRoot(ListOrCreateModelView):
-    permissions = (IsUserOrIsAnonReadOnly, )
+class ApiRoot(View):
+    def get(self, request):
+        return [{'name': 'Publishers', 'url': reverse('publisher-list')},
+                {'name': 'Games', 'url': reverse('game-list')},
+                {'name': 'Conventions', 'url': reverse('convention-list')},
+                {'name': 'Events', 'url': reverse('event-list')},
+                {'name': 'Votes', 'url': reverse('vote-list')}]
 
-class PublisherModelView(InstanceModelView):
+class VoteRoot(ListOrCreateModelView):
+    form = VoteForm
     permissions = (IsUserOrIsAnonReadOnly, )
+    resource = VoteResource
+    
+    def post(self, request):
+        """
+        Create new vote.
+        
+        This just fiddles with self.CONTENT, to insert the currently
+        authenticated user as the user.
+        """
+        if self.user.is_authenticated():
+            self.CONTENT['user'] = self.user
+        else:
+            raise PermissionDenied
+        return super(VoteRoot, self).post(request)
 
-class GameRoot(ListOrCreateModelView):
+class VoteModelView(InstanceModelView):
+    form = VoteForm
     permissions = (IsUserOrIsAnonReadOnly, )
-
-class GameModelView(InstanceModelView):
-    permissions = (IsUserOrIsAnonReadOnly, )
+    resource = VoteResource
+    
+    def delete(self, request, pk):
+        event = get_object_or_404(Vote, pk=pk)
+        if self.user == vote.user:
+            return super(VoteModelView, self).delete(self, request, pk=pk)
+        else:
+            return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to delete this vote.')
+        
+    def put(self, request, pk):
+        return Response(status.HTTP_501_NOT_IMPLEMENTED, content='Votes are immutable.')
 
 class EventRoot(ListOrCreateModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
+    resource = EventResource
     
     def get(self, request):
         result = super(EventRoot, self).get(request)
@@ -68,31 +98,21 @@ class EventRoot(ListOrCreateModelView):
     
     def post(self, request):
         """
-        Create new event
+        Create new event.
+        
+        This just fiddles with self.CONTENT, to insert the currently
+        authenticated user as the host.
         """
         if self.user.is_authenticated():
-            host = self.user
+            self.CONTENT['host'] = self.user
         else:
             raise PermissionDenied
-        start = self.CONTENT['start']
-        end = self.CONTENT['end']
-        min = self.CONTENT['min']
-        max = self.CONTENT['max']
-        game = self.CONTENT['game']
-        event = Event(host=host,
-                      start=start,
-                      end=end,
-                      min=min,
-                      max=max,
-                      game=game)
-        event.save()
-        event_id = event.id
-        return Response(status.HTTP_201_CREATED,
-                        headers={'Location': reverse('event-instance', args=[event_id])})
+        return super(EventRoot, self).post(request)
 
 class EventModelView(InstanceModelView):
     form = EventForm
     permissions = (IsUserOrIsAnonReadOnly, )
+    resource = EventResource
     
     def delete(self, request, pk):
         event = get_object_or_404(Event, pk=pk)
@@ -110,6 +130,7 @@ class EventModelView(InstanceModelView):
     
 class EventJoinView(View):
     permissions = (IsAuthenticated, )
+    resource = EventResource
     
     def get(self, request, pk):
         """
@@ -134,6 +155,7 @@ class EventJoinView(View):
     
 class EventLeaveView(View):
     permissions = (IsAuthenticated, )
+    resource = EventResource
 
     def get(self, request, pk):
         """

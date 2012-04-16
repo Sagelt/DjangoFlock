@@ -23,10 +23,16 @@ class Game(models.Model):
     def __str__(self):
         return self.name
 
+class Convention(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+
 class Event(models.Model):
     host = models.ForeignKey(User, related_name='host')
     players = models.ManyToManyField(User, blank=True, null=True)
     game = models.ForeignKey(Game)
+    convention = models.ForeignKey(Convention)
     start = models.DateTimeField()
     end = models.DateTimeField()
     min = models.IntegerField()
@@ -79,3 +85,20 @@ class Event(models.Model):
     @property
     def title(self):
         return "%s with %s" % (self.game.name, self.host.username)
+
+class Vote(models.Model):
+    user = models.ForeignKey(User)
+    game = models.ForeignKey(Game)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    
+    @property
+    def duration(self):
+        """
+        This used to return a timedelta. Now it returns a float of the number
+        of hours of the event.
+        
+        Timedelta objects store days and seconds, so you have to take the
+        seconds and divide by 60 * 60.
+        """
+        return (self.end - self.start).seconds / float(60 * 60)

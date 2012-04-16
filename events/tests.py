@@ -161,3 +161,9 @@ class EventTest(TestCase):
         self.event.end = now + end_delta
         self.event.save()
         self.assertTrue(self.event.is_ongoing())
+        
+class ConventionTest(TestCase):
+    pass
+
+class VoteTest(TestCase):
+    pass

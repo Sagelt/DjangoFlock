@@ -1,28 +1,43 @@
 from django.conf.urls import patterns, include, url
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly
 from djangorestframework.views import InstanceModelView, ListOrCreateModelView
-from events.resources import GameResource, EventResource, PublisherResource
-from events.views import EventRoot, EventModelView, GameRoot, GameModelView, \
-    EventJoinView, EventLeaveView, PublisherRoot, PublisherModelView
+from events.resources import ConventionResource, GameResource, PublisherResource, \
+    VoteResource
+from events.views import ApiRoot, EventRoot, EventModelView, EventJoinView, \
+    EventLeaveView, VoteRoot, VoteModelView
 
 urlpatterns = patterns('events',
-    url(r'^publishers/$', PublisherRoot.as_view(resource=PublisherResource,
-        permissions=(IsUserOrIsAnonReadOnly, )), name='publisher-list'),
-    url(r'^publishers/(?P<pk>[^/]+)/$', PublisherModelView.as_view(
+    url(r'^$', ApiRoot.as_view()),
+
+    url(r'^publishers/$', ListOrCreateModelView.as_view(
+        resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, )),
+        name='publisher-list'),
+    url(r'^publishers/(?P<pk>[^/]+)/$', InstanceModelView.as_view(
         resource=PublisherResource, permissions=(IsUserOrIsAnonReadOnly, )),
         name='publisher-instance'),
     
-    url(r'^games/$', GameRoot.as_view(resource=GameResource),
-        name='game-list'),
-    url(r'^games/(?P<pk>[^/]+)/$', GameModelView.as_view(
-        resource=GameResource), name='game-instance'),
+    url(r'^games/$', ListOrCreateModelView.as_view(resource=GameResource,
+        permissions=(IsUserOrIsAnonReadOnly, )), name='game-list'),
+    url(r'^games/(?P<pk>[^/]+)/$', InstanceModelView.as_view(
+        resource=GameResource, permissions=(IsUserOrIsAnonReadOnly, )),
+        name='game-instance'),
 
-    url(r'^events/$', EventRoot.as_view(resource=EventResource),
-        name='event-list'),
-    url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(
-        resource=EventResource), name='event-instance'),
-    url(r'^events/(?P<pk>[^/]+)/join/$', EventJoinView.as_view(
-        resource=EventResource), name='event-instance-join'),
-    url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(
-        resource=EventResource), name='event-instance-leave'),
+    url(r'^conventions/$', ListOrCreateModelView.as_view(
+        resource=ConventionResource, permissions=(IsUserOrIsAnonReadOnly, )),
+        name='convention-list'),
+    url(r'^conventions/(?P<pk>[^/]+)$', InstanceModelView.as_view(
+        resource=ConventionResource, permissions=(IsUserOrIsAnonReadOnly, )),
+        name='convention-instance'),
+
+    url(r'^events/$', EventRoot.as_view(), name='event-list'),
+    url(r'^events/(?P<pk>[^/]+)/$', EventModelView.as_view(),
+        name='event-instance'),
+    url(r'^events/(?P<pk>[^/]+)/join/$', EventJoinView.as_view(),
+        name='event-instance-join'),
+    url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(),
+        name='event-instance-leave'),
+
+    url(r'^votes/$', VoteRoot.as_view(), name='vote-list'),
+    url(r'^votes/(?P<pk>[^/]+)$', VoteModelView.as_view(),
+        name='vote-instance'),
 )

@@ -1,5 +1,5 @@
 from django import forms
-from events.models import Publisher, Game, Event
+from events.models import Publisher, Game, Event, Convention, Vote
 
 class PublisherForm(forms.ModelForm):
     class Meta:
@@ -11,10 +11,15 @@ class GameForm(forms.ModelForm):
         model = Game
         fields = ('name', 'publisher', 'edition')
 
+class ConventionForm(forms.ModelForm):
+    class Meta:
+        model = Convention
+        fields = ('name', )
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('game', 'start', 'end', 'min', 'max')
+        fields = ('convention', 'game', 'start', 'end', 'min', 'max')
     
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -33,3 +38,8 @@ class EventForm(forms.ModelForm):
             if 'max' in cleaned_data:
                 del cleaned_data['max']
         return cleaned_data
+
+class VoteForm(forms.ModelForm):
+    class Meta:
+        model = Vote
+        fields = ('game', 'start', 'end')
