@@ -9,4 +9,15 @@
 {% endblock %}
 
 {% block main %}
+<div class="row">
+<h1 class="span8">{{ object.name }}</h1>
+{% if user.is_authenticated and user.is_staff %}
+<div class="span4"><a href="edit/" class="btn btn-info" style="float: right;">edit</a></div>
+{% endif %}
+</div>
+{% if object.description %}
+{{ object.description }}
+{% else %}
+<div class="empty">No description.</div>
+{% endif %}
 {% endblock %}

@@ -31,6 +31,8 @@ class Convention(models.Model):
     name = models.CharField(max_length=50)
     def __str__(self):
         return self.name
+    def get_absolute_url(self):
+        return "/conventions/%s/" % self.id
 
 class Event(models.Model):
     host = models.ForeignKey(User, related_name='host')
