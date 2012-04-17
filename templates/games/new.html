@@ -16,27 +16,28 @@ $(document).ready(function() {
 		buttons: {
 			"create": function() {
 				var name = $('#publisher_name').val();
-				var url = $('#publisher_url').val();
+				var publisher_url = $('#publisher_url').val();
+				var csrf = $('[name=csrfmiddlewaretoken]').val();
 				// Not currently implemented on the server.
 				// var description = $('#publisher_url').val();
 				$.ajax("/api/publishers/", {
 					type: 'POST',
 					data: {
 						name: name,
-						publisher_url: url
+						publisher_url: publisher_url,
+						csrfmiddlewaretoken: csrf
 					},
 					beforeSend: function() {
-						//pass
+						console.log(this.data);
 					},
-					// @todo: this isn't happening, because there's some auth problem.
 					success: function(data, textStatus, jqXHR) {
 						console.log(data);
 						var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>")
 						$('#id_publisher').append(new_item);
-						new_item.select();
+						new_item.attr('selected', 'selected');
 					},
 					error: function(jqXHR, textStatus, errorThrown) {
-						//pass
+						// @todo: include human-readable error message.
 					}
 				});
 				$(this).dialog("close");
@@ -60,9 +61,11 @@ $(document).ready(function() {
 		<label for="name">Name</label>
 		<input type="text" name="name" id="publisher_name" />
 		<label for="publisher_url">URL</label>
-		<input type="text" name="publisher_url" id="pulisher_url" />
+		<input type="text" name="publisher_url" id="publisher_url" />
 		<label for="description">Description</label>
 		<input type="text" name="description" id="publisher_description" />
+		{% csrf_token %}
+		{# TODO: wire the buttons to the form, so you can hit "enter" #}
 	</fieldset>
 	</form>
 </div>
