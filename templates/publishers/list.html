@@ -9,4 +9,17 @@
 {% endblock %}
 
 {% block main %}
+<div class="row">
+<h1 class="span8">Publishers</h1>
+{% if user.is_authenticated %}
+<div class="span4"><a href="new/" class="btn btn-success" style="float: right;">create</a></div>
+{% endif %}
+</div>
+<ul>
+{% for publisher in object %}
+	<li><a href="{{ publisher.get_absolute_url }}">{{ publisher.name }}</a></li>
+{% empty %}
+	<li class="empty">No publishers.</li>
+{% endfor %}
+</ul>
 {% endblock %}

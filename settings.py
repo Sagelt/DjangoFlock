@@ -102,6 +102,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django_mobile.middleware.MobileDetectionMiddleware',
     'django_mobile.middleware.SetFlavourMiddleware',
+    # Following for development only:
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'DjangoFlock.urls'
@@ -127,6 +129,8 @@ INSTALLED_APPS = (
     'djangorestframework',
     'django_mobile',
     'events',
+    # Following for development only:
+    'debug_toolbar',
 )
 
 # A sample logging configuration. The only tangible logging

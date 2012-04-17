@@ -13,6 +13,8 @@ class Publisher(models.Model):
     updated = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    def get_absolute_url(self):
+        return "/publishers/%s/" % self.id
 
 class Game(models.Model):
     name = models.CharField(max_length=50)

@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from events.models import Publisher, Game, Event
+from events.forms import PublisherForm
 
 def home(request):
     if request.flavour == 'mobile':
@@ -19,25 +20,26 @@ def publishers_list(request):
     publishers = Publisher.objects.all()
     if request.flavour == 'mobile':
         return render_to_response("mobile/mobile.html")
-    return render_to_response('publishers_list.html', {'publishers': publishers}, context_instance=RequestContext(request))
+    return render_to_response('publishers/list.html', {'object': publishers}, context_instance=RequestContext(request))
 
 def publishers_new(request):
-    publishers = Publisher.objects.all()
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('publishers_list.html', {'publishers': publishers}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        pub = PublisherForm(request.POST)
+        publisher = pub.save()
+        return redirect(publisher)
+    return render_to_response('publishers/new.html', {'form': PublisherForm()}, context_instance=RequestContext(request))
 
 def publishers_instance(request, pk):
     publisher = Publisher.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('publishers_instance.html', {'publisher': publisher}, context_instance=RequestContext(request))
+    return render_to_response('publishers/instance.html', {'object': publisher}, context_instance=RequestContext(request))
 
 def publishers_instance_edit(request, pk):
     publisher = Publisher.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('publishers_instance.html', {'publisher': publisher}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        pub = PublisherForm(request.POST, instance=publisher)
+        pub.save()
+        return redirect(publisher)
+    return render_to_response('publishers/edit.html', {'object': publisher, 'form': PublisherForm(instance=publisher)}, context_instance=RequestContext(request))
 
 def games_list(request):
     games = Game.objects.all()
