@@ -24,6 +24,8 @@ class Game(models.Model):
     updated = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.name
+    def get_absolute_url(self):
+        return "/games/%s/" % self.id
 
 class Convention(models.Model):
     name = models.CharField(max_length=50)

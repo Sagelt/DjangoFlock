@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from events.models import Publisher, Game, Event
-from events.forms import PublisherForm
+from events.forms import PublisherForm, GameForm
 
 def home(request):
     if request.flavour == 'mobile':
@@ -43,27 +43,26 @@ def publishers_instance_edit(request, pk):
 
 def games_list(request):
     games = Game.objects.all()
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('games_list.html', {'games': games}, context_instance=RequestContext(request))
+    return render_to_response('games/list.html', {'object': games}, context_instance=RequestContext(request))
 
 def games_new(request):
-    games = Game.objects.all()
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('games_list.html', {'games': games}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        gam = GameForm(request.POST)
+        game = gam.save()
+        return redirect(game)
+    return render_to_response('games/new.html', {'form': GameForm()}, context_instance=RequestContext(request))
 
 def games_instance(request, pk):
     game = Game.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('games_instance.html', {'game': game}, context_instance=RequestContext(request))
+    return render_to_response('games/instance.html', {'object': game}, context_instance=RequestContext(request))
 
 def games_instance_edit(request, pk):
     game = Game.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('games_instance.html', {'game': game}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        gam = GameForm(request.POST, instance=game)
+        gam.save()
+        return redirect(game)
+    return render_to_response('games/edit.html', {'object': game, 'form': GameForm(instance=game)}, context_instance=RequestContext(request))
 
 def conventions_list(request):
     raise NotImplementedError
