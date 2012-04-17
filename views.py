@@ -28,9 +28,12 @@ def publishers_list(request):
 def publishers_new(request):
     if request.method == 'POST':
         pub = PublisherForm(request.POST)
-        publisher = pub.save()
-        return redirect(publisher)
-    return render_to_response('publishers/new.html', {'form': PublisherForm()}, context_instance=RequestContext(request))
+        if pub.is_valid():
+            publisher = pub.save()
+            return redirect(publisher)
+    else:
+        pub = PublisherForm()
+    return render_to_response('publishers/new.html', {'form': pub}, context_instance=RequestContext(request))
 
 def publishers_instance(request, pk):
     publisher = Publisher.objects.get(pk=pk)
@@ -41,9 +44,12 @@ def publishers_instance_edit(request, pk):
     publisher = Publisher.objects.get(pk=pk)
     if request.method == 'POST':
         pub = PublisherForm(request.POST, instance=publisher)
-        pub.save()
-        return redirect(publisher)
-    return render_to_response('publishers/edit.html', {'object': publisher, 'form': PublisherForm(instance=publisher)}, context_instance=RequestContext(request))
+        if pub.is_valid():
+            pub.save()
+            return redirect(publisher)
+    else:
+        pub = PublisherForm(instance=publisher)
+    return render_to_response('publishers/edit.html', {'object': publisher, 'form': pub}, context_instance=RequestContext(request))
 
 def games_list(request):
     games = Game.objects.all()
@@ -53,9 +59,12 @@ def games_list(request):
 def games_new(request):
     if request.method == 'POST':
         gam = GameForm(request.POST)
-        game = gam.save()
-        return redirect(game)
-    return render_to_response('games/new.html', {'form': GameForm()}, context_instance=RequestContext(request))
+        if gam.is_valid():
+            game = gam.save()
+            return redirect(game)
+    else:
+        gam = GameForm()
+    return render_to_response('games/new.html', {'form': gam}, context_instance=RequestContext(request))
 
 def games_instance(request, pk):
     game = Game.objects.get(pk=pk)
@@ -66,9 +75,12 @@ def games_instance_edit(request, pk):
     game = Game.objects.get(pk=pk)
     if request.method == 'POST':
         gam = GameForm(request.POST, instance=game)
-        gam.save()
-        return redirect(game)
-    return render_to_response('games/edit.html', {'object': game, 'form': GameForm(instance=game)}, context_instance=RequestContext(request))
+        if gam.is_valid():
+            gam.save()
+            return redirect(game)
+    else:
+        gam = GameForm(instance=game)
+    return render_to_response('games/edit.html', {'object': game, 'form': gam}, context_instance=RequestContext(request))
 
 def conventions_list(request):
     conventions = Convention.objects.all()
