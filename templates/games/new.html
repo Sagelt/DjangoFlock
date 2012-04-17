@@ -13,39 +13,58 @@ $(document).ready(function() {
 		height: 350,
 		width: 350,
 		modal: true,
-		buttons: {
-			"create": function() {
-				var name = $('#publisher_name').val();
-				var publisher_url = $('#publisher_url').val();
-				var csrf = $('[name=csrfmiddlewaretoken]').val();
-				// Not currently implemented on the server.
-				// var description = $('#publisher_url').val();
-				$.ajax("/api/publishers/", {
-					type: 'POST',
-					data: {
-						name: name,
-						publisher_url: publisher_url,
-						csrfmiddlewaretoken: csrf
-					},
-					beforeSend: function() {
-						console.log(this.data);
-					},
-					success: function(data, textStatus, jqXHR) {
-						console.log(data);
-						var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>")
-						$('#id_publisher').append(new_item);
-						new_item.attr('selected', 'selected');
-					},
-					error: function(jqXHR, textStatus, errorThrown) {
-						// @todo: include human-readable error message.
-					}
-				});
-				$(this).dialog("close");
+		buttons: [
+			{
+				text: "create",
+				click: function() {
+					var name = $('#publisher_name').val();
+					var publisher_url = $('#publisher_url').val();
+					var csrf = $('[name=csrfmiddlewaretoken]').val();
+					// Not currently implemented on the server.
+					// var description = $('#publisher_url').val();
+					$.ajax("/api/publishers/", {
+						type: 'POST',
+						data: {
+							name: name,
+							publisher_url: publisher_url,
+							csrfmiddlewaretoken: csrf
+						},
+						beforeSend: function() {
+							console.log(this.data);
+						},
+						success: function(data, textStatus, jqXHR) {
+							console.log(data);
+							var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>")
+							$('#id_publisher').append(new_item);
+							new_item.attr('selected', 'selected');
+							$('#modal_errors').html('');
+							$('#create_publisher_dialog').dialog("close");
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							$('#modal_errors').html('');
+							if (jqXHR.responseText) {
+								var errors = $.parseJSON(jqXHR.responseText);
+								$.each(errors, function(i, value) {
+									$.each(value, function(j, error_instance) {
+										$.each(error_instance, function(k, error_message) {
+											$("#modal_errors").append("<div class='alert alert-error'>" + error_message + "</div>");
+										});
+									});
+								});
+							} else {
+								$("#modal_errors").append("<div class='alert alert-error'>Error communicating with the server.</div>");
+							}
+						}
+					});
+				}
 			},
-			"cancel": function() {
-				$(this).dialog("close");
+			{
+				text: "cancel",
+				click: function() {
+					$(this).dialog("close");
+				}
 			}
-		}
+		]
 	});
 	$('#create_publisher').click(function() {
 		$('#create_publisher_dialog').dialog("open");
@@ -58,6 +77,7 @@ $(document).ready(function() {
 <div id="create_publisher_dialog" title="Create new Publisher">
 	<form>
 	<fieldset>
+		<div id="modal_errors"></div>
 		<label for="name">Name</label>
 		<input type="text" name="name" id="publisher_name" />
 		<label for="publisher_url">URL</label>

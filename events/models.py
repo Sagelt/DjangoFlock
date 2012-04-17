@@ -7,7 +7,7 @@ from events.exceptions import EventFullError, OwnEventError
 # Create your models here.
 
 class Publisher(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     publisher_url = models.URLField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
