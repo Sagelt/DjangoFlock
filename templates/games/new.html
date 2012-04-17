@@ -17,6 +17,10 @@ $(document).ready(function() {
 		$('#modal_errors').html('');
 		$('#create_publisher_dialog input:first').focus();
 	});
+	$('#create_publisher_dialog').on('hidden', function() {
+		$('#modal_errors').html('');
+		$('#id_publisher').focus();
+	});
 	$('#modal_cancel').click(function() {
 		$('#create_publisher_dialog').modal('hide');
 	});
