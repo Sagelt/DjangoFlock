@@ -17,9 +17,9 @@ from djangorestframework.response import Response
 from djangorestframework.views import View, InstanceModelView, \
     ListOrCreateModelView
 from events.exceptions import EventFullError, OwnEventError
-from events.forms import EventForm, VoteForm
+from events.forms import EventForm, DemandForm
 from events.models import Event, Game, Publisher, Convention
-from events.resources import EventResource, VoteResource
+from events.resources import EventResource, DemandResource
 
 class ApiRoot(View):
     def get(self, request):
@@ -27,21 +27,21 @@ class ApiRoot(View):
                 {'name': 'Games', 'url': reverse('game-list')},
                 {'name': 'Conventions', 'url': reverse('convention-list')},
                 {'name': 'Events', 'url': reverse('event-list')},
-                {'name': 'Votes', 'url': reverse('vote-list')}]
+                {'name': 'Demands', 'url': reverse('demand-list')}]
 
-class VoteRoot(ListOrCreateModelView):
-    form = VoteForm
+class DemandRoot(ListOrCreateModelView):
+    form = DemandForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    resource = VoteResource
+    resource = DemandResource
     
     def get(self, request):
         """
-        This shows votes-per-game in little hour boxes.
+        This shows demands-per-game in little hour boxes.
         
         It accepts many query parameters:
          - List of game IDs; if none, all games shown
-         - Start timestamp: all votes that end after this will be included.
-         - End timestamp: all votes that start before this will be included.
+         - Start timestamp: all demands that end after this will be included.
+         - End timestamp: all demands that start before this will be included.
         """
         kwargs = {}
         if 'start' in request.GET:
@@ -67,11 +67,11 @@ class VoteRoot(ListOrCreateModelView):
                 except Game.DoesNotExist:
                     pass
         # **kwargs gets passed to a filter on the queryset
-        return super(VoteRoot, self).get(request, **kwargs)
+        return super(DemandRoot, self).get(request, **kwargs)
 
     def post(self, request):
         """
-        Create new vote.
+        Create new demand.
         
         This just fiddles with self.CONTENT, to insert the currently
         authenticated user as the user.
@@ -80,22 +80,22 @@ class VoteRoot(ListOrCreateModelView):
             self.CONTENT['user'] = self.user
         else:
             raise PermissionDenied
-        return super(VoteRoot, self).post(request)
+        return super(DemandRoot, self).post(request)
 
-class VoteModelView(InstanceModelView):
-    form = VoteForm
+class DemandModelView(InstanceModelView):
+    form = DemandForm
     permissions = (IsUserOrIsAnonReadOnly, )
-    resource = VoteResource
+    resource = DemandResource
     
     def delete(self, request, pk):
-        event = get_object_or_404(Vote, pk=pk)
-        if self.user == vote.user:
-            return super(VoteModelView, self).delete(self, request, pk=pk)
+        event = get_object_or_404(Demand, pk=pk)
+        if self.user == demand.user:
+            return super(DemandModelView, self).delete(self, request, pk=pk)
         else:
-            return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to delete this vote.')
+            return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to delete this demand.')
         
     def put(self, request, pk):
-        return Response(status.HTTP_501_NOT_IMPLEMENTED, content='Votes are immutable.')
+        return Response(status.HTTP_501_NOT_IMPLEMENTED, content='Demands are immutable.')
 
 class EventRoot(ListOrCreateModelView):
     form = EventForm

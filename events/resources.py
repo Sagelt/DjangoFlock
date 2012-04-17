@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from djangorestframework.resources import ModelResource
-from events.models import Game, Event, Publisher, Convention, Vote
+from events.models import Game, Event, Publisher, Convention, Demand
 
 class UserResource(ModelResource):
     model = User
@@ -22,8 +22,8 @@ class GameResource(ModelResource):
     ordering = ('name', )
     fields = ('id', 'name', 'edition', ('publisher', PublisherResource), 'url')
 
-class VoteResource(ModelResource):
-    model = Vote
+class DemandResource(ModelResource):
+    model = Demand
     ordering = ('game', )
     fields = ('id', ('user', UserResource), ('game', GameResource), 'start',
               'end', 'duration', 'url')

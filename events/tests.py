@@ -173,7 +173,7 @@ class EventTest(TestCase):
 class ConventionTest(TestCase):
     pass
 
-class VoteTest(TestCase):
+class DemandTest(TestCase):
     pass
 
 class EventViewTest(TestCase):
@@ -244,7 +244,7 @@ class EventViewTest(TestCase):
         events = Event.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
         self.assertQuerysetEqual(Event.objects.filter(), map(repr, events))
 
-class VoteViewTest(TestCase):
+class DemandViewTest(TestCase):
     # This fixture should contain users kit, Test{1-10}
     # @todo: This fixture doesn't stress-test these views at all.
     # Work on that.
@@ -253,41 +253,41 @@ class VoteViewTest(TestCase):
     def setUp(self):
         user = User.objects.get(username='kit')
         game = Game.objects.get(id=1)
-        vote = Vote(
+        demand = Demand(
             start=datetime.strptime("2012-04-01 11:00", "%Y-%m-%d %H:%M"),
             end=datetime.strptime("2012-04-01 20:00", "%Y-%m-%d %H:%M"),
             game=game,
             user=user
         )
-        vote.save()
+        demand.save()
     
     def test_unfiltered(self):
-        response = self.client.get('/api/votes/')
-        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
-        self.assertQuerysetEqual(Vote.objects.filter(), map(repr, votes))
+        response = self.client.get('/api/demands/')
+        demands = Demand.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Demand.objects.filter(), map(repr, demands))
     
     def test_filter_start(self):
         start = datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
         start_stamp = int(time.mktime(start.timetuple()))
-        response = self.client.get('/api/votes/', {'start': start_stamp})
-        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
-        self.assertQuerysetEqual(Vote.objects.filter(end__gte=start), map(repr, votes))
+        response = self.client.get('/api/demands/', {'start': start_stamp})
+        demands = Demand.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Demand.objects.filter(end__gte=start), map(repr, demands))
     
     def test_filter_end(self):
         end = datetime.strptime("2012-04-01 13:00", "%Y-%m-%d %H:%M")
         end_stamp = int(time.mktime(end.timetuple()))
-        response = self.client.get('/api/votes/', {'end': end_stamp})
-        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
-        self.assertQuerysetEqual(Vote.objects.filter(start__lte=end), map(repr, votes))
+        response = self.client.get('/api/demands/', {'end': end_stamp})
+        demands = Demand.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Demand.objects.filter(start__lte=end), map(repr, demands))
     
     def test_filter_game(self):
         filter = Game.objects.get(id=1)
-        response = self.client.get('/api/votes/', {'game': 1})
-        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
-        self.assertQuerysetEqual(Vote.objects.filter(game=filter), map(repr, votes))
+        response = self.client.get('/api/demands/', {'game': 1})
+        demands = Demand.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Demand.objects.filter(game=filter), map(repr, demands))
     
     def test_filter_game_list(self):
         filter = Game.objects.get(id__in=[1, 2])
-        response = self.client.get('/api/votes/', {'game': [1, 2]})
-        votes = Vote.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
-        self.assertQuerysetEqual(Vote.objects.filter(game=filter), map(repr, votes))
+        response = self.client.get('/api/demands/', {'game': [1, 2]})
+        demands = Demand.objects.filter(id__in=[x['id'] for x in json.loads(response.content)])
+        self.assertQuerysetEqual(Demand.objects.filter(game=filter), map(repr, demands))

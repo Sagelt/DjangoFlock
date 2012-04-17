@@ -95,7 +95,7 @@ class Event(models.Model):
     def __repr__(self):
         return "<%s: %s>" % (self.__class__.__name__, self.id) 
 
-class Vote(models.Model):
+class Demand(models.Model):
     user = models.ForeignKey(User)
     game = models.ForeignKey(Game)
     start = models.DateTimeField()

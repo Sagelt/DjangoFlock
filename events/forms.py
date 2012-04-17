@@ -1,5 +1,5 @@
 from django import forms
-from events.models import Publisher, Game, Event, Convention, Vote
+from events.models import Publisher, Game, Event, Convention, Demand
 
 class PublisherForm(forms.ModelForm):
     class Meta:
@@ -39,7 +39,7 @@ class EventForm(forms.ModelForm):
                 del cleaned_data['max']
         return cleaned_data
 
-class VoteForm(forms.ModelForm):
+class DemandForm(forms.ModelForm):
     class Meta:
-        model = Vote
+        model = Demand
         fields = ('game', 'start', 'end')

@@ -2,9 +2,9 @@ from django.conf.urls import patterns, include, url
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly
 from djangorestframework.views import InstanceModelView, ListOrCreateModelView
 from events.resources import ConventionResource, GameResource, PublisherResource, \
-    VoteResource
+    DemandResource
 from events.views import ApiRoot, EventRoot, EventModelView, EventJoinView, \
-    EventLeaveView, VoteRoot, VoteModelView
+    EventLeaveView, DemandRoot, DemandModelView
 
 urlpatterns = patterns('events',
     url(r'^$', ApiRoot.as_view()),
@@ -37,7 +37,7 @@ urlpatterns = patterns('events',
     url(r'^events/(?P<pk>[^/]+)/leave/$', EventLeaveView.as_view(),
         name='event-instance-leave'),
 
-    url(r'^votes/$', VoteRoot.as_view(), name='vote-list'),
-    url(r'^votes/(?P<pk>[^/]+)$', VoteModelView.as_view(),
-        name='vote-instance'),
+    url(r'^demands/$', DemandRoot.as_view(), name='demand-list'),
+    url(r'^demands/(?P<pk>[^/]+)$', DemandModelView.as_view(),
+        name='demand-instance'),
 )
