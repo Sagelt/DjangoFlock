@@ -6,14 +6,82 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#create_publisher_dialog").dialog({
+		autoOpen: false,
+		height: 350,
+		width: 350,
+		modal: true,
+		buttons: {
+			"create": function() {
+				var name = $('#publisher_name').val();
+				var url = $('#publisher_url').val();
+				// Not currently implemented on the server.
+				// var description = $('#publisher_url').val();
+				$.ajax("/api/publishers/", {
+					type: 'POST',
+					data: {
+						name: name,
+						publisher_url: url
+					},
+					beforeSend: function() {
+						//pass
+					},
+					// @todo: this isn't happening, because there's some auth problem.
+					success: function(data, textStatus, jqXHR) {
+						console.log(data);
+						var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>")
+						$('#id_publisher').append(new_item);
+						new_item.select();
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						//pass
+					}
+				});
+				$(this).dialog("close");
+			},
+			"cancel": function() {
+				$(this).dialog("close");
+			}
+		}
+	});
+	$('#create_publisher').click(function() {
+		$('#create_publisher_dialog').dialog("open");
+	});
+});
+</script>
 {% endblock %}
 
 {% block main %}
+<div id="create_publisher_dialog" title="Create new Publisher">
+	<form>
+	<fieldset>
+		<label for="name">Name</label>
+		<input type="text" name="name" id="publisher_name" />
+		<label for="publisher_url">URL</label>
+		<input type="text" name="publisher_url" id="pulisher_url" />
+		<label for="description">Description</label>
+		<input type="text" name="description" id="publisher_description" />
+	</fieldset>
+	</form>
+</div>
 <h1>Create Game</h1>
-<form action="" method="post" class="form-horizontal">
-	{{ form.as_p }}
+<form action="" method="post">
+	<fieldset class="well">
+    {% for field in form %}
+        {{ field.errors }}
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.name == "publisher" %}
+		<a class="btn btn-info btn-mini" id="create_publisher">new</a>
+        {% endif %}
+    {% endfor %}
 	{% csrf_token %}
-	<input type="submit" value="create" class="btn btn-primary" />
-	<a href=".." class="btn btn-warning">cancel</a>
+	<div>
+		<input type="submit" value="create" class="btn btn-primary" />
+		<a href=".." class="btn btn-warning">cancel</a>
+	</div>
+	</fieldset>
 </form>
 {% endblock %}
