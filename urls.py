@@ -20,7 +20,6 @@ urlpatterns = patterns('',
 
     # REST API
     url(r'^api/', include('events.urls')),
-    #url(r'^api1/', include('events.urls')),
 
     # HTML forms for accessing the REST API.
     url('^publishers/$', views.publishers_list),
