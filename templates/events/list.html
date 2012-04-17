@@ -16,6 +16,13 @@ $(document).ready(function() {
 			editable: false,
 			allDayDefault: false
 		}],
+		eventClick: function(event) {
+			if (event.url && event.id) {
+				event.url = "/events/" + event.id + "/";
+				window.location.pathname = event.url;
+				return false;
+			}
+		},
 		header: {
 			left: 'title',
 			center: 'month,agendaWeek,agendaDay',
