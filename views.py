@@ -1,11 +1,12 @@
 # Create your views here.
-from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseForbidden
+from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.template import RequestContext
+from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm, \
+    EventForm
 from events.models import Publisher, Game, Event, Convention, Demand
-from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm, EventForm
 
 def home(request):
     if request.flavour == 'mobile':
@@ -23,6 +24,7 @@ def publishers_list(request):
         return render_to_response("mobile/mobile.html")
     return render_to_response('publishers/list.html', {'object': publishers}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def publishers_new(request):
     if request.method == 'POST':
         pub = PublisherForm(request.POST)
@@ -34,6 +36,7 @@ def publishers_instance(request, pk):
     publisher = Publisher.objects.get(pk=pk)
     return render_to_response('publishers/instance.html', {'object': publisher}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def publishers_instance_edit(request, pk):
     publisher = Publisher.objects.get(pk=pk)
     if request.method == 'POST':
@@ -46,6 +49,7 @@ def games_list(request):
     games = Game.objects.all()
     return render_to_response('games/list.html', {'object': games}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def games_new(request):
     if request.method == 'POST':
         gam = GameForm(request.POST)
@@ -57,6 +61,7 @@ def games_instance(request, pk):
     game = Game.objects.get(pk=pk)
     return render_to_response('games/instance.html', {'object': game}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def games_instance_edit(request, pk):
     game = Game.objects.get(pk=pk)
     if request.method == 'POST':
@@ -69,6 +74,7 @@ def conventions_list(request):
     conventions = Convention.objects.all()
     return render_to_response('conventions/list.html', {'object': conventions}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def conventions_new(request):
     if request.method == 'POST':
         con = ConventionForm(request.POST)
@@ -80,6 +86,7 @@ def conventions_instance(request, pk):
     convention = Convention.objects.get(pk=pk)
     return render_to_response('conventions/instance.html', {'object': convention}, context_instance=RequestContext(request))
 
+@user_passes_test(lambda u: u.is_staff)
 def conventions_instance_edit(request, pk):
     convention = Convention.objects.get(pk=pk)
     if request.method == 'POST':
@@ -92,6 +99,7 @@ def events_list(request):
     events = Event.objects.all()
     return render_to_response('events/list.html', {'events': events}, context_instance=RequestContext(request))
 
+@login_required
 def events_new(request):
     if request.method == 'POST':
         eve = EventForm(request.POST)
@@ -105,24 +113,30 @@ def events_instance(request, pk):
     event = Event.objects.get(pk=pk)
     return render_to_response('events/instance.html', {'event': event}, context_instance=RequestContext(request))
 
+@login_required
 def events_instance_edit(request, pk):
     event = Event.objects.get(pk=pk)
+    if request.user != event.host:
+        return HttpResponseForbidden()
     if request.method == 'POST':
         eve = EventForm(request.POST, instance=event)
         eve.save()
         return redirect(event)
     return render_to_response('events/edit.html', {'event': event, 'form': EventForm(instance=event)}, context_instance=RequestContext(request))
 
+@login_required
 def events_instance_join(request, pk):
     event = Event.objects.get(pk=pk)
     event.add_player(request.user)
     return redirect(event)
 
+@login_required
 def events_instance_leave(request, pk):
     event = Event.objects.get(pk=pk)
     event.remove_player(request.user)
     return redirect(event)
 
+@login_required
 def demands_list_mine(request):
     if request.user.is_authenticated():
         demands = Demand.objects.filter(user=request.user)
@@ -133,6 +147,7 @@ def demands_list(request):
     demands = Demand.objects.all()
     return render_to_response('demands/list.html', {'object': demands}, context_instance=RequestContext(request))
 
+@login_required
 def demands_new(request):
     if request.method == 'POST':
         dem = DemandForm(request.POST)
@@ -146,8 +161,11 @@ def demands_instance(request, pk):
     demand = Demand.objects.get(pk=pk)
     return render_to_response('demands/instance.html', {'object': demand}, context_instance=RequestContext(request))
 
+@login_required
 def demands_instance_edit(request, pk):
     demand = Demand.objects.get(pk=pk)
+    if request.user != demand.user:
+        return HttpResponseForbidden()
     if request.method == 'POST':
         dem = DemandForm(request.POST, instance=demand)
         dem.save()
