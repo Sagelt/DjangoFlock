@@ -9,4 +9,11 @@
 {% endblock %}
 
 {% block main %}
+<h1>Create Demand</h1>
+<form action="" method="post" class="form-horizontal">
+	{{ form.as_p }}
+	{% csrf_token %}
+	<input type="submit" value="create" class="btn btn-primary" />
+	<a href=".." class="btn btn-warning">cancel</a>
+</form>
 {% endblock %}

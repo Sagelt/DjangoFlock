@@ -114,4 +114,7 @@ class Demand(models.Model):
         return (self.end - self.start).seconds / float(60 * 60)
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.id) 
+        return "<%s: %s>" % (self.__class__.__name__, self.id)
+    
+    def get_absolute_url(self):
+        return "/demands/%s/" % self.id

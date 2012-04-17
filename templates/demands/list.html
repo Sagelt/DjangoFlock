@@ -9,4 +9,17 @@
 {% endblock %}
 
 {% block main %}
+<div class="row">
+<h1 class="span8">Demands</h1>
+{% if user.is_authenticated %}
+<div class="span4"><a href="new/" class="btn btn-success" style="float: right;">create</a></div>
+{% endif %}
+</div>
+<ul>
+{% for demand in object %}
+	<li><a href="{{ demand.get_absolute_url }}">{{ demand.user }} wants {{ demand.game.name }}</a></li>
+{% empty %}
+	<li class="empty">No demands.</li>
+{% endfor %}
+</ul>
 {% endblock %}

@@ -3,8 +3,9 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
-from events.models import Publisher, Game, Event, Convention
-from events.forms import PublisherForm, GameForm, ConventionForm
+from django.http import HttpResponseForbidden
+from events.models import Publisher, Game, Event, Convention, Demand
+from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm
 
 def home(request):
     if request.flavour == 'mobile':
@@ -123,17 +124,33 @@ def events_instance_leave(request, pk):
         return render_to_response("mobile/mobile.html")
     return render_to_response('events_instance.html', {'event': event}, context_instance=RequestContext(request))
 
-def demands_list(request):
-    raise NotImplentedError
-
 def demands_list_mine(request):
-    raise NotImplentedError
+    if request.user.is_authenticated():
+        demands = Demand.objects.filter(user=request.user)
+        return render_to_response('demands/list.html', {'object': demands}, context_instance=RequestContext(request))
+    return HttpResponseForbidden()
+
+def demands_list(request):
+    demands = Demand.objects.all()
+    return render_to_response('demands/list.html', {'object': demands}, context_instance=RequestContext(request))
 
 def demands_new(request):
-    raise NotImplentedError
+    if request.method == 'POST':
+        dem = DemandForm(request.POST)
+        demand = dem.save(commit=False)
+        demand.user = request.user
+        demand.save()
+        return redirect(demand)
+    return render_to_response('demands/new.html', {'form': DemandForm()}, context_instance=RequestContext(request))
 
 def demands_instance(request, pk):
-    raise NotImplentedError
+    demand = Demand.objects.get(pk=pk)
+    return render_to_response('demands/instance.html', {'object': demand}, context_instance=RequestContext(request))
 
 def demands_instance_edit(request, pk):
-    raise NotImplentedError
+    demand = Demand.objects.get(pk=pk)
+    if request.method == 'POST':
+        dem = DemandForm(request.POST, instance=demand)
+        dem.save()
+        return redirect(demand)
+    return render_to_response('demands/edit.html', {'object': demand, 'form': DemandForm(instance=demand)}, context_instance=RequestContext(request))
