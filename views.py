@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.http import HttpResponseForbidden
 from events.models import Publisher, Game, Event, Convention, Demand
-from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm
+from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm, EventForm
 
 def home(request):
     if request.flavour == 'mobile':
@@ -90,39 +90,38 @@ def conventions_instance_edit(request, pk):
 
 def events_list(request):
     events = Event.objects.all()
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_list.html', {'events': events}, context_instance=RequestContext(request))
+    return render_to_response('events/list.html', {'events': events}, context_instance=RequestContext(request))
 
 def events_new(request):
-    events = Event.objects.all()
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_list.html', {'events': events}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        eve = EventForm(request.POST)
+        event = eve.save(commit=False)
+        event.host = request.user
+        event.save()
+        return redirect(event)
+    return render_to_response('events/new.html', {'form': EventForm()}, context_instance=RequestContext(request))
 
 def events_instance(request, pk):
     event = Event.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_instance.html', {'event': event}, context_instance=RequestContext(request))
+    return render_to_response('events/instance.html', {'event': event}, context_instance=RequestContext(request))
 
 def events_instance_edit(request, pk):
     event = Event.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_instance.html', {'event': event}, context_instance=RequestContext(request))
+    if request.method == 'POST':
+        eve = EventForm(request.POST, instance=event)
+        eve.save()
+        return redirect(event)
+    return render_to_response('events/edit.html', {'event': event, 'form': EventForm(instance=event)}, context_instance=RequestContext(request))
 
 def events_instance_join(request, pk):
     event = Event.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_instance.html', {'event': event}, context_instance=RequestContext(request))
+    event.add_player(request.user)
+    return redirect(event)
 
 def events_instance_leave(request, pk):
     event = Event.objects.get(pk=pk)
-    if request.flavour == 'mobile':
-        return render_to_response("mobile/mobile.html")
-    return render_to_response('events_instance.html', {'event': event}, context_instance=RequestContext(request))
+    event.remove_player(request.user)
+    return redirect(event)
 
 def demands_list_mine(request):
     if request.user.is_authenticated():

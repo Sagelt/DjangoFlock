@@ -13,7 +13,22 @@
 {% endblock %}
 
 {% block main %}
-<h1>{{ event.title }}</h1>
+<div clas="row">
+	<h1 class="span7">{{ event.title }}</h1>
+	<div class="span4">
+		{% if user == event.host %}
+		<a href="edit/" class="btn btn-info" style="float: right;">edit</a>
+		{% elif user.is_authenticated %}
+		{% if user in event.players.all %}
+		<a href="leave/" class="btn btn-danger" style="float: right;">leave</a>
+		{% else %}
+		<a href="join/" class="btn btn-success" style="float: right;">join</a>
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+<div style="clear: both;"></div>
+<div>
 <ul>
 	<li>Min: {{ event.min }}</li>
 	<li>Max: {{ event.max }}</li>
@@ -24,11 +39,12 @@
 	<li>Players:
 	<ul>
 	{% for player in event.players.all %}
-		<li>{{ player.name }}</li>
+		<li>{{ player.username }}</li>
 	{% empty %}
 		<li class="no-players">No players.</li>
 	{% endfor %}
 	</ul>
 	</li>
 </ul>
+</div>
 {% endblock %}

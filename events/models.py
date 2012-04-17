@@ -93,7 +93,10 @@ class Event(models.Model):
         return "%s with %s" % (self.game.name, self.host.username)
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.id) 
+        return "<%s: %s>" % (self.__class__.__name__, self.id)
+    
+    def get_absolute_url(self):
+        return "/events/%s/" % self.id 
 
 class Demand(models.Model):
     user = models.ForeignKey(User)

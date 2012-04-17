@@ -30,10 +30,11 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block main %}
-<h1>Events</h1>
-<p>
-	This should call in FullCalendar, and also give controls for filtering by
-	players, location.
-</p>
+<div class="row">
+<h1 class="span8">Events</h1>
+{% if user.is_authenticated %}
+<a href="new/" class="btn btn-success" style="float: right;">create</a>
+{% endif %}
+</div>
 <div id="calendar"></div>
 {% endblock %}
