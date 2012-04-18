@@ -156,6 +156,8 @@ LOGGING = {
     }
 }
 
+AUTH_PROFILE_MODULE = 'events.UserProfile'
+
 # If there's a settings_local.py file, import it into this namespace. It's a
 # good place to put DATABASES and SECRET_KEY, for example.
 try:

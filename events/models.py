@@ -2,6 +2,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
 from events.exceptions import EventFullError, OwnEventError
 
 # Create your models here.
@@ -121,3 +122,15 @@ class Demand(models.Model):
     
     def get_absolute_url(self):
         return "/demands/%s/" % self.id
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    active_convention = models.ForeignKey(Convention, blank=True, null=True)
+    def __str__(self):
+        return "User Profile: %s" % self.user.username
+
+# Register a callback function to create a user profile if none present.
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+post_save.connect(create_user_profile, sender=User)
