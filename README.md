@@ -12,3 +12,7 @@ Todo
  - Notify people when games they've expressed interest in are being run.
  - Get a real favicon.
  - Decide on a name. RPGflock? Constellator?
+ - Publish events to per-Convention gCal/iCal/whatever it is format.
+ - Factor out modal forms into partials, group relevant javascript with them, use include tags.
+ - Make Convention implicit; set your current convention in your user profile, have all data filtered to show just your convention, have top-banner status show your current convention.
+ - Make user profiles.

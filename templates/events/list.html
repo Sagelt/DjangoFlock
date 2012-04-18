@@ -31,13 +31,45 @@ $(document).ready(function() {
 		},
 		firstDay: 1,
 		height: ($(window).height() - 250), // This is to account for the header and footer size.
-		defaultView: 'agendaDay'
+		height: 500, // For testing
+		defaultView: 'agendaDay',
+    	dayClick: function(date, allDay, jsEvent, view) {
+	        if (allDay) {
+	            console.log('Clicked on the entire day: ' + date);
+	        }else{
+	            console.log('Clicked on the slot: ' + date);
+	        }
+	        console.log('Current view: ' + view.name);
+    	}
 	});
 });
 </script>
 {% endblock %}
 
 {% block main %}
+<div id="create_event_dialog" class="modal fade">
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal">&times;</a>
+		<h3>Create new Event</h3>
+	</div>
+	<form method="post" action="/events/new/" id="modal_form" style="margin-bottom: 0px;">
+		{# TODO: factor this form out into a partial, use an include tag. #}
+		{# That'll probably also mean including the relevant javascript here. #}
+	<div class="modal-body">
+			<div id="modal_errors"></div>
+			<label for="convention">Convention</label>
+			<input type="text" name="convention" id="event_convention" />
+			<label for="publisher_url">URL</label>
+			<input type="text" name="publisher_url" id="publisher_url" />
+			{% csrf_token %}
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" id="modal_cancel">cancel</a>
+		<input type="submit" class="btn btn-primary" id="modal_create" value="create" />
+	</div>
+	</form>
+</div>
+
 <div class="row">
 <h1 class="span8">Events</h1>
 {% if user.is_authenticated %}

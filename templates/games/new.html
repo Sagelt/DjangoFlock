@@ -70,6 +70,8 @@ $(document).ready(function() {
 		<h3>Create new Publisher</h3>
 	</div>
 	<form method="post" action="/publishers/new/" id="modal_form" style="margin-bottom: 0px;">
+		{# TODO: factor this form out into a partial, use an include tag. #}
+		{# That'll probably also mean including the relevant javascript here. #}
 	<div class="modal-body">
 			<div id="modal_errors"></div>
 			<label for="name">Name</label>
