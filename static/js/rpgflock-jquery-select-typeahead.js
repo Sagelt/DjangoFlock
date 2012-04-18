@@ -1,10 +1,17 @@
 /*
- * This is a plugin to turn select tags into textinput tags with typeahead autocomplete.
+ * This is a plugin to turn select tags into textinput tags with typeahead
+ * autocomplete.
  * 
- * It is not complete.
+ * It is not complete. It is almost certainly a bad idea. There's a small bit
+ * of functionality it adds over normal selects (you can guess at what
+ * something might be; don't need to get it right from the first character you
+ * type) and a large bit of functionality it loses (you can't look at the set
+ * of options).
  * 
  * Use:
- *   $('select#some-id').selectahead(); // Returns jQuery objects of the select items, NOT the newly inserted text items.
+ *   $('select#some-id').selectahead(); // Returns jQuery objects of the select
+ *                                      // items, NOT the newly inserted text
+ *                                      // items.
  * 
  * Requirements:
  *   jQuery
@@ -12,15 +19,18 @@
  * 
  * Notes:
  *   Will probably break on select items without an id attribute.
- *   Will behave weirdly if multiple option items in the select have the same inner HTML.
- *   Will behave weirdly if there's markup in the inner HTML of the option items.
+ *   Will behave weirdly if multiple option items in the select have the same
+ *       inner HTML.
+ *   Will behave weirdly if there's markup in the inner HTML of the option
+ *       items.
  * 
  * Features:
  *   Creates a text input with typeahead sources from the select.
  *   Hides the select.
  * 
  * Todo:
- *   Keep the select set to the option matching the current text of the text input.
+ *   Keep the select set to the option matching the current text of the text
+ *       input.
  *   Prepopulate the text input with the already-selected item from the select.
  *   Reject text that does not correspond with any item in the select.
  *   Figure out what "finished" means: blur, hit enter, what else?
@@ -38,7 +48,8 @@
 			return ret;
 		}
 		function parse_options_names(options) {
-			// Expects a list of option objects as provided by parse_options above.
+			// Expects a list of option objects as provided by parse_options
+			// above.
 			var ret = [];
 			$.each(options, function(i, option) {
 				ret.push(option.name);
@@ -56,8 +67,10 @@
 			$(this).after(text_input);
 			$(this).hide();
 			settings.source = options_names;
-			text_input.typeahead(settings); // This REQUIRES that bootstrap-typeahead.js be loaded.
-			// TODO select the appropriate option in the hidden select when the field is "finished", whether by blur or by something else.
+			text_input.typeahead(settings); // This REQUIRES that
+											// bootstrap-typeahead.js be loaded.
+			// TODO select the appropriate option in the hidden select when the
+			// field is "finished", whether by blur or by something else.
 			// TODO prepopulate the text_input with the selected item.
 		});
 	};
