@@ -174,6 +174,7 @@ class EventJoinView(View):
     resource = EventResource
     
     def get(self, request, pk):
+        # @todo: This should probably be taken out.
         """
         Just passes through to .post so that the web interface works.
         """
@@ -199,6 +200,7 @@ class EventLeaveView(View):
     resource = EventResource
 
     def get(self, request, pk):
+        # @todo: This should probably be taken out.
         """
         Just passes through to .post so that the web interface works.
         """

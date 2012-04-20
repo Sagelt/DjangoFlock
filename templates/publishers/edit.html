@@ -6,11 +6,23 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$.ajaxSetup({
+		statusCode: {
+			200: function(data, textStatus, jqXHR){
+				// When editing via the API, you get a 200
+				window.location = '/publishers/' + data.id + '/';
+			}
+		}
+	});
+});
+</script>
 {% endblock %}
 
 {% block main %}
 <h1>Edit <em>{{ object.name }}</em></h1>
-<form action="" method="post">
+<form action="" method="post" id="create_publisher">
 	{% include "publishers/_form.html" %}
 	<div>
 		<input type="submit" value="save" class="btn btn-primary" />

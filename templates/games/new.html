@@ -19,33 +19,8 @@ $(document).ready(function() {
 	$('#modal_cancel').click(function() {
 		$('#create_dialog').modal('hide');
 	});
-	$('#modal_form').submit(function() {
-		var data = $(this).serialize();
-		$.ajax('/publishers/new/', {
-			type: 'POST',
-			data: data,
-			dataType: 'json',
-			statusCode: {
-				201: function(data, textStatus, jqXHR) {
-					console.log(data, textStatus, jqXHR);
-					// If server responds with Object Created
-					var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>");
-					$('#id_publisher').append(new_item);
-					new_item.attr('selected', 'selected');
-					$('#create_dialog').modal('hide');
-				},
-				200: function(data, textStatus, jqXHR) {
-					// If server responds with form errors
-					$('#create_dialog div.modal-body').html(data);
-				}
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
-			}
-		});
-		return false;
-	});
-	$('#create_publisher').click(function() {
+	// Get new publisher form via ajax call, insert it into modal.
+	$('#add_publisher').click(function() {
 		$.ajax('/publishers/new/', {
 			type: 'GET',
 			success: function(data, textStatus, jqXHR) {
@@ -72,11 +47,8 @@ $(document).ready(function() {
 		<a class="close" data-dismiss="modal">&times;</a>
 		<h3>Create new Publisher</h3>
 	</div>
-	<form method="post" action="/publishers/new/" id="modal_form" style="margin-bottom: 0px;">
-		{# TODO: factor this form out into a partial, use an include tag. #}
-		{# That'll probably also mean including the relevant javascript here. #}
+	<form method="post" action="/publishers/new/" id="create_publisher" style="margin-bottom: 0px;">
 	<div class="modal-body">
-		{# Fill this with an ajax call to /publishers/new/ #}
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="btn" id="modal_cancel">cancel</a>
@@ -93,7 +65,7 @@ $(document).ready(function() {
         {{ field.label_tag }}
         {{ field }}
         {% if field.name == "publisher" %}
-		<a href="#" class="btn btn-info btn-mini" id="create_publisher">new</a>
+		<a href="#" class="btn btn-info btn-mini" id="add_publisher">new</a>
         {% endif %}
         {% for error in field.errors %}
         <span class="alert alert-error">{{ error }}</span>

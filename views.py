@@ -38,11 +38,8 @@ def publishers_new(request):
     else:
         form = PublisherForm()
     return render_to_response('publishers/%s' % render_target,
-                              {'form': form},
+                              {'form': form, 'editing': False},
                               context_instance=RequestContext(request))
-
-# ==================
-# TODO Refactor views from here down.
 
 def publishers_instance(request, pk):
     publisher = Publisher.objects.get(pk=pk)
@@ -51,14 +48,25 @@ def publishers_instance(request, pk):
 @user_passes_test(lambda u: u.is_staff)
 def publishers_instance_edit(request, pk):
     publisher = Publisher.objects.get(pk=pk)
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'edit.html'
     if request.method == 'POST':
-        pub = PublisherForm(request.POST, instance=publisher)
-        if pub.is_valid():
-            pub.save()
+        form = PublisherForm(request.POST, instance=publisher)
+        if form.is_valid():
+            form.save()
             return redirect(publisher)
     else:
-        pub = PublisherForm(instance=publisher)
-    return render_to_response('publishers/edit.html', {'object': publisher, 'form': pub}, context_instance=RequestContext(request))
+        form = PublisherForm(instance=publisher)
+    return render_to_response('publishers/%s' % render_target,
+                              {'object': publisher,
+                               'form': form,
+                               'editing': True},
+                              context_instance=RequestContext(request))
+
+# ==================
+# TODO Refactor views from here down.
 
 def games_list(request):
     games = Game.objects.all()
