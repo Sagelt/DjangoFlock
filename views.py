@@ -1,7 +1,7 @@
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm, \
@@ -26,14 +26,23 @@ def publishers_list(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def publishers_new(request):
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'new.html'
     if request.method == 'POST':
-        pub = PublisherForm(request.POST)
-        if pub.is_valid():
-            publisher = pub.save()
+        form = PublisherForm(request.POST)
+        if form.is_valid():
+            publisher = form.save()
             return redirect(publisher)
     else:
-        pub = PublisherForm()
-    return render_to_response('publishers/new.html', {'form': pub}, context_instance=RequestContext(request))
+        form = PublisherForm()
+    return render_to_response('publishers/%s' % render_target,
+                              {'form': form},
+                              context_instance=RequestContext(request))
+
+# ==================
+# TODO Refactor views from here down.
 
 def publishers_instance(request, pk):
     publisher = Publisher.objects.get(pk=pk)

@@ -11,16 +11,7 @@
 {% block main %}
 <h1>Edit <em>{{ object.name }}</em></h1>
 <form action="" method="post">
-	<fieldset class="well">
-    {% for field in form %}
-        {{ field.label_tag }}
-        {{ field }}
-        {% for error in field.errors %}
-        <span class="alert alert-error">{{ error }}</span>
-        {% endfor %}
-    {% endfor %}
-	{% csrf_token %}
-	</fieldset>
+	{% include "publishers/_form.html" %}
 	<div>
 		<input type="submit" value="save" class="btn btn-primary" />
 		<a href=".." class="btn btn-warning">cancel</a>

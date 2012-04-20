@@ -10,17 +10,8 @@
 
 {% block main %}
 <h1>Create Publisher</h1>
-<form action="" method="post">
-	<fieldset class="well">
-    {% for field in form %}
-        {{ field.label_tag }}
-        {{ field }}
-        {% for error in field.errors %}
-        <span class="alert alert-error">{{ error }}</span>
-        {% endfor %}
-    {% endfor %}
-	{% csrf_token %}
-	</fieldset>
+<form id="create_publisher" action="{{ request.path }}" method="post">
+	{% include "publishers/_form.html" %}
 	<div>
 		<input type="submit" value="create" class="btn btn-primary" />
 		<a href=".." class="btn btn-warning">cancel</a>

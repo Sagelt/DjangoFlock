@@ -1,0 +1,48 @@
+<fieldset class="well">
+{% for field in form %}
+    {{ field.label_tag }}
+    {{ field }}<div class="errors" id="{{ field.name }}_errors">
+    {% for error in field.errors %}
+    <br /><div class="alert alert-error">{{ error }}</div>
+    {% endfor %}
+    </div>
+{% endfor %}
+{% csrf_token %}
+</fieldset>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#create_publisher').submit(function() {
+		var data = $(this).serialize();
+		$.ajax('/api/publishers/', {
+			type: 'POST',
+			data: data,
+			beforeSend: function() {
+				// Clear any old errors.
+				$('.errors').html('');
+			},
+			statusCode: {
+				201: function(data, textStatus, jqXHR) {
+					// Redirect to browser-UI address of new object
+					window.location = "/publishers/" + data.id + "/";
+					// TODO This will break the hell out of embedding this form 
+					// in another form, via modal.
+				},
+				400: function(jqXHR, textStatus, errorThrown) {
+					// Display errors
+					// Parse jqXHR.responseText
+					var errors = $.parseJSON(jqXHR.responseText);
+					$.each(errors['field_errors'], function(key, error_list) {
+						// Find appropriate error div, append each error in error_list to that div.
+						$.each(error_list, function(i, error_message) {
+							$('#' + key + '_errors').append(
+								"<div class=\"alert alert-error\">" + error_message + "</div>"
+							);
+						})
+					});
+				}
+			}
+		});
+		return false;
+	});
+});
+</script>

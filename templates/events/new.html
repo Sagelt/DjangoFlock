@@ -9,11 +9,47 @@
 {% endblock %}
 
 {% block main %}
+<div id="create_publisher_dialog" class="modal fade">
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal">&times;</a>
+		<h3>Create new Publisher</h3>
+	</div>
+	<form method="post" action="/publishers/new/" id="modal_form" style="margin-bottom: 0px;">
+		{# TODO: factor this form out into a partial, use an include tag. #}
+		{# That'll probably also mean including the relevant javascript here. #}
+	<div class="modal-body">
+			<div id="modal_errors"></div>
+			<label for="name">Name</label>
+			<input type="text" name="name" id="publisher_name" />
+			<label for="publisher_url">URL</label>
+			<input type="text" name="publisher_url" id="publisher_url" />
+			{% csrf_token %}
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" id="modal_cancel">cancel</a>
+		<input type="submit" class="btn btn-primary" id="modal_create" value="create" />
+	</div>
+	</form>
+</div>
+
 <h1>Create Event</em></h1>
-<form action="" method="post" class="form-horizontal">
-	{{ form.as_p }}
+<form action="" method="post">
+	<fieldset class="well">
+	{% for field in form %}
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.name == "game" %}
+		<a href="#" class="btn btn-info btn-mini" id="create_game">new</a>
+        {% endif %}
+        {% for error in field.errors %}
+        <span class="alert alert-error">{{ error }}</span>
+        {% endfor %}
+    {% endfor %}
 	{% csrf_token %}
-	<input type="submit" value="save" class="btn btn-primary" />
-	<a href=".." class="btn btn-warning">cancel</a>
+	</fieldset>
+	<div>
+		<input type="submit" value="create" class="btn btn-primary" />
+		<a href=".." class="btn btn-warning">cancel</a>
+	</div>
 </form>
 {% endblock %}

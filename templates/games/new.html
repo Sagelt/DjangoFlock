@@ -8,63 +8,66 @@
 {% block js %}
 <script type="text/javascript">
 $(document).ready(function() {
-	$('#create_publisher_dialog').modal({
+	$('#create_dialog').modal({
 		show: false,
 		backdrop: true,
 		keyboard: true
 	});
-	$('#create_publisher_dialog').on('shown', function() {
-		$('#modal_errors').html('');
-		$('#create_publisher_dialog input:first').focus();
-	});
-	$('#create_publisher_dialog').on('hidden', function() {
-		$('#modal_errors').html('');
+	$('#create_dialog').on('hidden', function() {
 		$('#id_publisher').focus();
 	});
 	$('#modal_cancel').click(function() {
-		$('#create_publisher_dialog').modal('hide');
-	});
-	$('#create_publisher').click(function() {
-		$('#create_publisher_dialog').modal('show');
+		$('#create_dialog').modal('hide');
 	});
 	$('#modal_form').submit(function() {
 		var data = $(this).serialize();
-		$.ajax('/api/publishers/', {
+		$.ajax('/publishers/new/', {
 			type: 'POST',
 			data: data,
-			beforeSend: function() {
-				console.log(this.data);
-			},
-			success: function(data, textStatus, jqXHR) {
-				var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>")
-				$('#id_publisher').append(new_item);
-				new_item.attr('selected', 'selected');
-				$('#create_publisher_dialog').modal('hide');
+			dataType: 'json',
+			statusCode: {
+				201: function(data, textStatus, jqXHR) {
+					console.log(data, textStatus, jqXHR);
+					// If server responds with Object Created
+					var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>");
+					$('#id_publisher').append(new_item);
+					new_item.attr('selected', 'selected');
+					$('#create_dialog').modal('hide');
+				},
+				200: function(data, textStatus, jqXHR) {
+					// If server responds with form errors
+					$('#create_dialog div.modal-body').html(data);
+				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				$('#modal_errors').html('');
-				if (jqXHR.responseText) {
-					var errors = $.parseJSON(jqXHR.responseText);
-					$.each(errors, function(i, value) {
-						$.each(value, function(j, error_instance) {
-							$.each(error_instance, function(k, error_message) {
-								$("#modal_errors").append("<div class='alert alert-error'>" + error_message + "</div>");
-							});
-						});
-					});
-				} else {
-					$("#modal_errors").append("<div class='alert alert-error'>Error communicating with the server.</div>");
-				}
+				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
 			}
 		});
 		return false;
+	});
+	$('#create_publisher').click(function() {
+		$.ajax('/publishers/new/', {
+			type: 'GET',
+			success: function(data, textStatus, jqXHR) {
+				$('#create_dialog div.modal-body').html(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
+			},
+			complete: function(jqXHR, textStatus) {
+				$('#create_dialog').modal('show');
+				$('#create_dialog').on('shown', function() {
+					$('#create_dialog input:first').focus();
+				});
+			}
+		});
 	});
 });
 </script>
 {% endblock %}
 
 {% block main %}
-<div id="create_publisher_dialog" class="modal fade">
+<div id="create_dialog" class="modal fade">
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal">&times;</a>
 		<h3>Create new Publisher</h3>
@@ -73,12 +76,7 @@ $(document).ready(function() {
 		{# TODO: factor this form out into a partial, use an include tag. #}
 		{# That'll probably also mean including the relevant javascript here. #}
 	<div class="modal-body">
-			<div id="modal_errors"></div>
-			<label for="name">Name</label>
-			<input type="text" name="name" id="publisher_name" />
-			<label for="publisher_url">URL</label>
-			<input type="text" name="publisher_url" id="publisher_url" />
-			{% csrf_token %}
+		{# Fill this with an ajax call to /publishers/new/ #}
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="btn" id="modal_cancel">cancel</a>
@@ -86,6 +84,8 @@ $(document).ready(function() {
 	</div>
 	</form>
 </div>
+
+
 <h1>Create Game</h1>
 <form action="" method="post">
 	<fieldset class="well">
