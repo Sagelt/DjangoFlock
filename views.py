@@ -22,13 +22,13 @@ def register_view(request):
 def users_list(request):
     users = User.objects.order_by('username')
     return render_to_response('users/list.html',
-                              {'users': users},
+                              {'user_list': users},
                               context_instance=RequestContext(request))
 
 def users_instance(request, username):
     user = get_object_or_404(User, username=username)
     return render_to_response('users/instance.html',
-                              {'user': user},
+                              {'user_instance': user},
                               context_instance=RequestContext(request))
 
 # ======== Flock-related views. Should refactor and make more generic

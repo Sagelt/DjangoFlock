@@ -1,21 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %} | Users | {{ user.username }}{% endblock %}
+{% block title %} | Users | {{ user_instance.username }}{% endblock %}
+
+{% block js %}
+{% if user == user_instance %}
+<script type="text/javascript" src="/static/js/jquery.jeditable.mini.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#edit').click(function () {
+		// Set editable fields as click-to-edit
+		$('.editable').editable('/users/{{ user_instance.username }}/');
+		// Save via ajax
+	})
+});
+</script>
+{% endif %}
+{% endblock %}
 
 {% block main %}
 <h1>
-	{{ user.first_name }}
-	{{ user.last_name }}
+	<span class="editable" id="first_name">{{ user_instance.first_name }}</span>
+	<span class="editable" id="last_name">{{ user_instance.last_name }}</span>
 </h1>
 <h2>
-	@{{ user.username }}
+	{{ user_instance.username }}
 </h2>
 <h3>Active convention:</h3>
-<p>
-	{% if user.get_profile.active_convention %}
-	{{ user.get_profile.active_convention }}
+<p class="editable" id="profile_active_convention">
+	{% if user_instance.get_profile.active_convention %}
+	{{ user_instance.get_profile.active_convention }}
 	{% else %}
 	None
 	{% endif %}
 </p>
+{% if user_instance == request.user %}<a href="#" class="btn btn-info" id="edit">edit</a>{% endif %}
 {% endblock %}

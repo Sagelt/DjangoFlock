@@ -5,8 +5,8 @@
 {% block main %}
 <h1>Users</h1>
 <ul>
-	{% for user in users %}
-	<li><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></li>
+	{% for user_instance in user_list %}
+	<li><a href="{{ user_instance.get_absolute_url }}">{{ user_instance.username }}</a></li>
 	{% empty %}
 	<li class="empty">No users</li>
 	{% endfor %}
