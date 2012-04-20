@@ -65,23 +65,26 @@ def publishers_instance_edit(request, pk):
                                'editing': True},
                               context_instance=RequestContext(request))
 
-# ==================
-# TODO Refactor views from here down.
-
 def games_list(request):
     games = Game.objects.all()
     return render_to_response('games/list.html', {'object': games}, context_instance=RequestContext(request))
 
 @user_passes_test(lambda u: u.is_staff)
 def games_new(request):
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'new.html'
     if request.method == 'POST':
-        gam = GameForm(request.POST)
-        if gam.is_valid():
-            game = gam.save()
+        form = GameForm(request.POST)
+        if form.is_valid():
+            game = form.save()
             return redirect(game)
     else:
-        gam = GameForm()
-    return render_to_response('games/new.html', {'form': gam}, context_instance=RequestContext(request))
+        form = GameForm()
+    return render_to_response('games/%s' % render_target,
+                              {'form': form, 'editing': False},
+                              context_instance=RequestContext(request))
 
 def games_instance(request, pk):
     game = Game.objects.get(pk=pk)
@@ -90,14 +93,25 @@ def games_instance(request, pk):
 @user_passes_test(lambda u: u.is_staff)
 def games_instance_edit(request, pk):
     game = Game.objects.get(pk=pk)
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'edit.html'
     if request.method == 'POST':
-        gam = GameForm(request.POST, instance=game)
-        if gam.is_valid():
-            gam.save()
+        form = GameForm(request.POST, instance=game)
+        if form.is_valid():
+            form.save()
             return redirect(game)
     else:
-        gam = GameForm(instance=game)
-    return render_to_response('games/edit.html', {'object': game, 'form': gam}, context_instance=RequestContext(request))
+        form = GameForm(instance=game)
+    return render_to_response('games/%s' % render_target,
+                              {'object': game,
+                               'form': form,
+                               'editing': True},
+                              context_instance=RequestContext(request))
+
+# ==================
+# TODO Refactor views from here down.
 
 def conventions_list(request):
     conventions = Convention.objects.all()
