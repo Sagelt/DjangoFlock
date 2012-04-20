@@ -73,7 +73,7 @@ $(document).ready(function() {
 </div>
 
 <h1>Edit <em>{{ object.name }}</em></h1>
-<form action="" method="post" id="create_game">
+<form action="{{ request.path }}" method="post" id="create_game">
 	{% include "games/_form.html" %}
 	<div>
 		<input type="submit" value="save" class="btn btn-primary" />

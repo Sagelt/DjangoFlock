@@ -15,7 +15,7 @@ $(document).ready(function() {
 				// This is set here, rather than in the partial, so that the
 				// partial can behave differently when called in an embedded
 				// fashion.
-				window.location = "/publishers/" + data.id + "/";
+				window.location = "/games/" + data.id + "/";
 			}
 		}
 	});
@@ -75,7 +75,7 @@ $(document).ready(function() {
 
 
 <h1>Create Game</h1>
-<form action="" method="post" id="create_game">
+<form action="{{ request.path }}" method="post" id="create_game">
 	{% include "games/_form.html" %}
 	<div>
 		<input type="submit" value="create" class="btn btn-primary" />

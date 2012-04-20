@@ -1,18 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %} | Games | {{ event.title }} | Edit{% endblock %}
+{% block title %} | Games | {{ object.title }} | Edit{% endblock %}
 
 {% block css %}
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$.ajaxSetup({
+		statusCode: {
+			201: function(data, textStatus, jqXHR) {
+				// Redirect to browser-UI address of new object
+				// This is set here, rather than in the partial, so that the
+				// partial can behave differently when called in an embedded
+				// fashion.
+				window.location = "/events/" + data.id + "/";
+			}
+		}
+	});
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#create_dialog').modal({
+		show: false,
+		backdrop: true,
+		keyboard: true
+	});
+	$('#create_dialog').on('hidden', function() {
+		$('#id_game').focus();
+	});
+	$('#modal_cancel').click(function() {
+		$('#create_dialog').modal('hide');
+	});
+	// Get new publisher form via ajax call, insert it into modal.
+	$('#add_game').click(function() {
+		$.ajax('/games/new/', {
+			type: 'GET',
+			success: function(data, textStatus, jqXHR) {
+				$('#create_dialog div.modal-body').html(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
+			},
+			complete: function(jqXHR, textStatus) {
+				$('#create_dialog').modal('show');
+				$('#create_dialog').on('shown', function() {
+					$('#create_dialog input:first').focus();
+				});
+			}
+		});
+	});
+});
+</script>
 {% endblock %}
 
 {% block main %}
-<h1>Edit <em>{{ event.title }}</em></h1>
-<form action="" method="post" class="form-horizontal">
-	{{ form.as_p }}
-	{% csrf_token %}
+<div id="create_dialog" class="modal fade">
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal">&times;</a>
+		<h3>Create new Game</h3>
+	</div>
+	<form method="post" action="/games/new/" id="create_game" style="margin-bottom: 0px;">
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" id="modal_cancel">cancel</a>
+		<input type="submit" class="btn btn-primary" id="modal_create" value="create" />
+	</div>
+	</form>
+</div>
+
+<h1>Edit <em>{{ object.title }}</em></h1>
+<form action="{{ request.path }}" method="post" id="create_event">
+	{% include "events/_form.html" %}
 	<input type="submit" value="save" class="btn btn-primary" />
 	<a href=".." class="btn btn-warning">cancel</a>
 </form>

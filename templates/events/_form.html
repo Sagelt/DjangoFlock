@@ -1,0 +1,61 @@
+<fieldset class="well">
+{% for field in form %}
+    {{ field.label_tag }}
+    {{ field }}
+    {% if field.name == "game" and request.user.is_staff and not request.is_ajax %}
+	<a href="#" class="btn btn-info btn-mini" id="add_game">new</a>
+    {% endif %}<div class="errors" id="{{ field.name }}_errors">
+    {% for error in field.errors %}
+    <br /><div class="alert alert-error">{{ error }}</div>
+    {% endfor %}
+    </div>
+{% endfor %}
+{% csrf_token %}
+</fieldset>
+<script type="text/javascript">
+$(document).ready(function() {
+	// This fieldset *must* be in a form with the id create_event for this
+	// behavior to work.
+	$('#create_event').submit(function() {
+		var csrfmiddlewaretoken = $(this).find('input[name=csrfmiddlewaretoken]').val();
+		var data = $(this).serialize();
+		$.ajax('/api/events/{% if editing %}{{ object.id }}/{% endif %}', {
+			type: {% if editing %}'PUT'{% else %}'POST'{% endif %},
+			data: data,
+			beforeSend: function(jqXHR) {
+				// Clear any old errors.
+				$('.errors').html('');
+				// If editing, set the CSRF token:
+				if (this.type == 'PUT') {
+					jqXHR.setRequestHeader('X-CSRFToken', csrfmiddlewaretoken);
+				}
+			},
+			statusCode: {
+				400: function(jqXHR, textStatus, errorThrown) {
+					// Display errors
+					// Parse jqXHR.responseText
+					var errors = $.parseJSON(jqXHR.responseText);
+					$.each(errors['field_errors'], function(key, error_list) {
+						// Find appropriate error div, append each error in
+						// error_list to that div.
+						$.each(error_list, function(i, error_message) {
+							$('#' + key + '_errors').append(
+								"<div class=\"alert alert-error\">" + error_message + "</div>"
+							);
+						})
+					});
+				}{% if request.is_ajax %},
+				201: function(data, textStatus, jqXHR) {
+					// This assumes that this form is in a modal, and that it
+					// needs to update the select with id id_game
+					var new_item = $("<option value='" + data.id + "'>" + data.name + "</option>");
+					$('#id_event').append(new_item);
+					new_item.attr('selected', 'selected');
+					$('#create_dialog').modal('hide');
+				}{% endif %}
+			}
+		});
+		return false;
+	});
+});
+</script>

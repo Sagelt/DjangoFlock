@@ -22,7 +22,7 @@ $(document).ready(function() {
 
 {% block main %}
 <h1>Edit <em>{{ object.name }}</em></h1>
-<form action="" method="post" id="create_publisher">
+<form action="{{ request.path }}" method="post" id="create_publisher">
 	{% include "publishers/_form.html" %}
 	<div>
 		<input type="submit" value="save" class="btn btn-primary" />

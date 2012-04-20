@@ -110,6 +110,65 @@ def games_instance_edit(request, pk):
                                'editing': True},
                               context_instance=RequestContext(request))
 
+def events_list(request):
+    events = Event.objects.all()
+    return render_to_response('events/list.html', {'events': events}, context_instance=RequestContext(request))
+
+@login_required
+def events_new(request):
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'new.html'
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.host = request.user
+            event.save()
+            return redirect(event)
+    else:
+        form = EventForm()
+    return render_to_response('events/%s' % render_target,
+                              {'form': form, 'editing': False},
+                              context_instance=RequestContext(request))
+
+def events_instance(request, pk):
+    event = Event.objects.get(pk=pk)
+    return render_to_response('events/instance.html', {'event': event}, context_instance=RequestContext(request))
+
+@login_required
+def events_instance_edit(request, pk):
+    event = Event.objects.get(pk=pk)
+    if request.is_ajax():
+        render_target = '_form.html'
+    else:
+        render_target = 'edit.html'
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save(commit=False)
+            return redirect(event)
+    else:
+        form = EventForm(instance=event)
+    return render_to_response('events/%s' % render_target,
+                              {'object': event,
+                               'form': form,
+                               'editing': True},
+                              context_instance=RequestContext(request))
+
+@login_required
+def events_instance_join(request, pk):
+    event = Event.objects.get(pk=pk)
+    event.add_player(request.user)
+    return redirect(event)
+
+@login_required
+def events_instance_leave(request, pk):
+    event = Event.objects.get(pk=pk)
+    event.remove_player(request.user)
+    return redirect(event)
+
 # ==================
 # TODO Refactor views from here down.
 
@@ -137,47 +196,6 @@ def conventions_instance_edit(request, pk):
         con.save()
         return redirect(convention)
     return render_to_response('conventions/edit.html', {'object': convention, 'form': ConventionForm(instance=convention)}, context_instance=RequestContext(request))
-
-def events_list(request):
-    events = Event.objects.all()
-    return render_to_response('events/list.html', {'events': events}, context_instance=RequestContext(request))
-
-@login_required
-def events_new(request):
-    if request.method == 'POST':
-        eve = EventForm(request.POST)
-        event = eve.save(commit=False)
-        event.host = request.user
-        event.save()
-        return redirect(event)
-    return render_to_response('events/new.html', {'form': EventForm()}, context_instance=RequestContext(request))
-
-def events_instance(request, pk):
-    event = Event.objects.get(pk=pk)
-    return render_to_response('events/instance.html', {'event': event}, context_instance=RequestContext(request))
-
-@login_required
-def events_instance_edit(request, pk):
-    event = Event.objects.get(pk=pk)
-    if request.user != event.host:
-        return HttpResponseForbidden()
-    if request.method == 'POST':
-        eve = EventForm(request.POST, instance=event)
-        eve.save()
-        return redirect(event)
-    return render_to_response('events/edit.html', {'event': event, 'form': EventForm(instance=event)}, context_instance=RequestContext(request))
-
-@login_required
-def events_instance_join(request, pk):
-    event = Event.objects.get(pk=pk)
-    event.add_player(request.user)
-    return redirect(event)
-
-@login_required
-def events_instance_leave(request, pk):
-    event = Event.objects.get(pk=pk)
-    event.remove_player(request.user)
-    return redirect(event)
 
 @login_required
 def demands_list_mine(request):
