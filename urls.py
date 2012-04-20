@@ -20,6 +20,10 @@ urlpatterns = patterns('',
 
     # REST API
     url(r'^api/', include('events.urls')),
+    
+    # User profile interface
+    url(r'users/$', views.users_list),
+    url(r'users/(?P<username>[^/]+)/$', views.users_instance),
 
     # HTML forms for accessing the REST API.
     url('^publishers/$', views.publishers_list),

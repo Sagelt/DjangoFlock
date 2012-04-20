@@ -1,5 +1,6 @@
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
@@ -17,6 +18,20 @@ def register_view(request):
     if request.flavour == 'mobile':
         return render_to_response("mobile/mobile.html")
     return render_to_response('signup.html', context_instance=RequestContext(request))
+
+def users_list(request):
+    users = User.objects.order_by('username')
+    return render_to_response('users/list.html',
+                              {'users': users},
+                              context_instance=RequestContext(request))
+
+def users_instance(request, username):
+    user = get_object_or_404(User, username=username)
+    return render_to_response('users/instance.html',
+                              {'user': user},
+                              context_instance=RequestContext(request))
+
+# ======== Flock-related views. Should refactor and make more generic
 
 def publishers_list(request):
     publishers = Publisher.objects.all()

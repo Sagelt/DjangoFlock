@@ -49,7 +49,7 @@
               <li><a href="/conventions/">Conventions</a></li>
               <li><a href="/demands/">Demands</a></li>
               {% if user.is_authenticated %}
-              <li><a href="/settings/">{{ user.username }}</a></li>
+              <li><a href="/users/{{ user.username }}/">{{ user.username }}</a></li>
               <li><a href="/logout/">Logout</a></li>
               {% else %}
               <li><a href="/login/">Login</a></li>
