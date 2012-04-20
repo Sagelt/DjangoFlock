@@ -6,6 +6,21 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+$(document).ready(function() {
+	$.ajaxSetup({
+		statusCode: {
+			201: function(data, textStatus, jqXHR) {
+				// Redirect to browser-UI address of new object
+				// This is set here, rather than in the partial, so that the
+				// partial can behave differently when called in an embedded
+				// fashion.
+				window.location = "/publishers/" + data.id + "/";
+			}
+		}
+	});
+});
+</script>
 {% endblock %}
 
 {% block main %}

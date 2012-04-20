@@ -21,12 +21,6 @@ $(document).ready(function() {
 				$('.errors').html('');
 			},
 			statusCode: {
-				201: function(data, textStatus, jqXHR) {
-					// Redirect to browser-UI address of new object
-					window.location = "/publishers/" + data.id + "/";
-					// TODO This will break the hell out of embedding this form 
-					// in another form, via modal.
-				},
 				400: function(jqXHR, textStatus, errorThrown) {
 					// Display errors
 					// Parse jqXHR.responseText
