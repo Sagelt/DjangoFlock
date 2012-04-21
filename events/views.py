@@ -1,3 +1,7 @@
+# Do I need these?
+from djangorestframework.renderers import BaseRenderer
+from djangorestframework.response import Response, ErrorResponse
+
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -213,12 +217,36 @@ class EventLeaveView(View):
         event.remove_player(user)
         return Response(status.HTTP_204_NO_CONTENT)
 
-class UserModelView(InstanceModelView):
+class UserModelView(View):
     resource = UserResource
+    
+    def get(self, request, *args, **kwargs):
+        model = self.resource.model
+        try:
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                filtered_keywords = kwargs.copy()
+                if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
+                    del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
+                self.model_instance = model.objects.get(**filtered_keywords)
+        except model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+        return self.model_instance
     
     def put(self, request, username):
         user = get_object_or_404(User, username=username)
         if self.user == user:
-            return super(UserModelView, self).put(request, username=username)
+            try:
+                self.model_instance = self.resource.model.objects.get(username=username)
+                for key, val in self.CONTENT.items():
+                    if key in self.DATA:
+                        setattr(self.model_instance, key, val)
+                self.model_instance.save()
+                return self.model_instance
+            except model.DoesNotExist:
+                return Response(status.HTTP_404_NOT_FOUND, content="No such user.")
         else:
             return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to modify this user.')
