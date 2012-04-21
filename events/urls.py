@@ -1,10 +1,11 @@
 from django.conf.urls import patterns, include, url
 from djangorestframework.permissions import IsUserOrIsAnonReadOnly
-from djangorestframework.views import InstanceModelView, ListOrCreateModelView
+from djangorestframework.views import InstanceModelView, ListOrCreateModelView, \
+    ListModelView
 from events.resources import ConventionResource, GameResource, PublisherResource, \
-    DemandResource
+    DemandResource, UserResource
 from events.views import ApiRoot, EventRoot, EventModelView, EventJoinView, \
-    EventLeaveView, DemandRoot, DemandModelView
+    EventLeaveView, DemandRoot, DemandModelView, UserModelView
 
 urlpatterns = patterns('events',
     url(r'^$', ApiRoot.as_view()),
@@ -40,4 +41,8 @@ urlpatterns = patterns('events',
     url(r'^demands/$', DemandRoot.as_view(), name='demand-list'),
     url(r'^demands/(?P<pk>[^/]+)$', DemandModelView.as_view(),
         name='demand-instance'),
+                       
+    url(r'users/$', ListModelView.as_view(resource=UserResource),
+        name='user-list'),
+    url(r'users/(?P<username>[^/]+)/$', UserModelView.as_view())
 )

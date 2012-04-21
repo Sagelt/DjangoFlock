@@ -19,7 +19,7 @@ from djangorestframework.views import View, InstanceModelView, \
 from events.exceptions import EventFullError, OwnEventError
 from events.forms import EventForm, DemandForm
 from events.models import Event, Game, Publisher, Convention
-from events.resources import EventResource, DemandResource
+from events.resources import EventResource, DemandResource, UserResource
 
 class ApiRoot(View):
     def get(self, request):
@@ -212,3 +212,13 @@ class EventLeaveView(View):
         event = get_object_or_404(Event, pk=pk)
         event.remove_player(user)
         return Response(status.HTTP_204_NO_CONTENT)
+
+class UserModelView(InstanceModelView):
+    resource = UserResource
+    
+    def put(self, request, username):
+        user = get_object_or_404(User, username=username)
+        if self.user == user:
+            return super(UserModelView, self).put(request, username=username)
+        else:
+            return Response(status.HTTP_403_FORBIDDEN, content='You do not have permission to modify this user.')

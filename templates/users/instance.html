@@ -2,15 +2,53 @@
 
 {% block title %} | Users | {{ user_instance.username }}{% endblock %}
 
+{% block css %}
+<style type="text/css">
+.full_name {
+	/* pass */
+}
+.username {
+	color: #777777;
+}
+.username .at {
+	color: #cccccc;
+}
+</style>
+{% endblock %}
+
 {% block js %}
 {% if user == user_instance %}
 <script type="text/javascript" src="/static/js/jquery.jeditable.mini.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#edit').click(function () {
+		var conventions = {0: "---------"};
+		$.ajax('/api/conventions/', {
+			success: function(data) {
+				$.each(data, function(i, value) {
+					conventions[value.id] = value.name;
+				});
+				// TODO get current active_convention, put its ID in conventions['selected'] 
+			}
+		})
 		// Set editable fields as click-to-edit
-		$('.editable').editable('/users/{{ user_instance.username }}/');
-		// Save via ajax
+		$('.editable').editable(function(value, settings) {
+			// Save with Ajax!
+			return value;
+		}, {
+			onblur: 'submit',
+			indicator: 'Saving…',
+			style: 'inherit'
+		});
+		$('#profile_active_convention').editable(function(value, settings) {
+			// Save with Ajax!
+			return conventions[value];
+		}, {
+			data: conventions,
+			type: 'select',
+			indicator: 'Saving…',
+			onblur: 'submit'
+		});
 	})
 });
 </script>
@@ -18,15 +56,15 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block main %}
-<h1>
-	<span class="editable" id="first_name">{{ user_instance.first_name }}</span>
-	<span class="editable" id="last_name">{{ user_instance.last_name }}</span>
+<h1 class="full_name">
+	<span class="editable" id="first_name" style="display: inline;">{% if user_instance.first_name %}{{ user_instance.first_name }}{% else %}<em>personal name</em>{% endif %}</span>
+	<span class="editable" id="last_name" style="display: inline;">{% if user_instance.last_name %}{{ user_instance.last_name }}{% else %}<em>surname</em>{% endif %}</span>
 </h1>
-<h2>
-	{{ user_instance.username }}
+<h2 class="username">
+	<span class="at">@</span>{{ user_instance.username }}
 </h2>
 <h3>Active convention:</h3>
-<p class="editable" id="profile_active_convention">
+<p id="profile_active_convention">
 	{% if user_instance.get_profile.active_convention %}
 	{{ user_instance.get_profile.active_convention }}
 	{% else %}

@@ -1,21 +1,25 @@
 from django.contrib.auth.models import User
-from djangorestframework.resources import ModelResource
+from djangorestframework.resources import ModelResource, FormResource
+from events.forms import UserForm
 from events.models import Game, Event, Publisher, Convention, Demand
-
-class UserResource(ModelResource):
-    model = User
-    ordering = ('username', )
-    fields = ('username', 'first_name', 'last_name')
-
-class PublisherResource(ModelResource):
-    model = Publisher
-    ordering = ('name', )
-    fields = ('id', 'name', 'publisher_url', 'url')
 
 class ConventionResource(ModelResource):
     model = Convention
     ordering = ('name', )
     fields = ('id', 'name')
+
+class UserResource(FormResource):
+    model = User
+    form = UserForm
+    ordering = ('username', )
+    fields = ('username', 'first_name', 'last_name', 'url', 'active_convention')
+    def active_convention(self, instance):
+        return instance.get_profile().active_convention
+
+class PublisherResource(ModelResource):
+    model = Publisher
+    ordering = ('name', )
+    fields = ('id', 'name', 'publisher_url', 'url')
 
 class GameResource(ModelResource):
     model = Game

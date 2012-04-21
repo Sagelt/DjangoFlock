@@ -1,5 +1,17 @@
 from django import forms
-from events.models import Publisher, Game, Event, Convention, Demand
+from django.contrib.auth.models import User
+from events.models import Publisher, Game, Event, Convention, Demand, UserProfile
+
+class UserForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    active_convention = forms.ModelChoiceField(Convention.objects.all(),
+                                               empty_label="None",
+                                               required=False)
+    # @todo: make a value of u'' or None set active_convention to None, but a
+    # missing active_convention key not change it. Currently, if you don't
+    # specify the active_convention with each form submission, it nukes the
+    # active convention.
 
 class PublisherForm(forms.ModelForm):
     class Meta:

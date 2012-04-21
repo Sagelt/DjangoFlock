@@ -125,12 +125,26 @@ class Demand(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    active_convention = models.ForeignKey(Convention, blank=True, null=True)
+    active_convention = models.ForeignKey(Convention, blank=True, null=True, on_delete=models.SET_NULL)
     def __str__(self):
         return "User Profile: %s" % self.user.username
 
 # Register a callback function to create a user profile if none present.
-def create_user_profile(sender, instance, created, **kwargs):
+def create_or_save_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
-post_save.connect(create_user_profile, sender=User)
+    else:
+        # Shenanigans here.
+        # Because Django REST Framework assumes that an InstanceModelView uses a
+        # Model, not a resource, it can't deal with a resource that flattens out
+        # two models with a one-to-one relationship. This is a hackish way of
+        # getting around it. I specify the fields in the UserProfile, and take
+        # them off of the User, where DRF has put them, and stick them back on
+        # the profile where they go. Then I throw up in my mouth a little.
+        profile_fields = ('active_convention', )
+        profile = instance.get_profile()
+        for field in profile_fields:
+            val = getattr(instance, field, None)
+            setattr(profile, field, val)
+        profile.save()
+post_save.connect(create_or_save_user_profile, sender=User)
