@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'djangorestframework',
     'django_mobile',
     'events',
+    'south',
     # Following for development only:
     'debug_toolbar',
 )

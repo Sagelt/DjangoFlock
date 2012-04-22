@@ -10,6 +10,7 @@ from events.exceptions import EventFullError, OwnEventError
 class Publisher(models.Model):
     name = models.CharField(max_length=50, unique=True)
     publisher_url = models.URLField(blank=True)
+    description = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     def __str__(self):
