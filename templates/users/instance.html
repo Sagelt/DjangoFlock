@@ -33,16 +33,57 @@ $(document).ready(function() {
 		})
 		// Set editable fields as click-to-edit
 		$('.editable').editable(function(value, settings) {
+			var ret;
+			var data = {
+				csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+			};
+			var attr = $(this).attr('id');
+			data[attr] = value;
 			// Save with Ajax!
-			return value;
+			$.ajax('/api/users/{{ user_instance.username }}/', {
+				type: 'PUT',
+				data: data,
+				beforeSend: function(jqXHR) {
+					jqXHR.setRequestHeader('X-CSRFToken', data.csrfmiddlewaretoken);
+				},
+				success: function(data, textStatus, jqXHR) {
+					ret = data[attr];
+				}
+			});
+			return ret;
 		}, {
 			onblur: 'submit',
 			indicator: 'Saving…',
 			style: 'inherit'
 		});
-		$('#profile_active_convention').editable(function(value, settings) {
+		// Set editable drop-down for current convention
+		$('#active_convention').editable(function(value, settings) {
+			var ret;
+			var data = {
+				csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+			};
+			var attr = $(this).attr('id');
+			if (value == 0) {
+				data[attr] = '';
+			} else {
+				data[attr] = value;
+			}
 			// Save with Ajax!
-			return conventions[value];
+			$.ajax('/api/users/{{ user_instance.username }}/', {
+				type: 'PUT',
+				data: data,
+				beforeSend: function(jqXHR) {
+					jqXHR.setRequestHeader('X-CSRFToken', data.csrfmiddlewaretoken);
+				},
+				success: function(data, textStatus, jqXHR) {
+					if (data[attr] != null) {
+						ret = data[attr].name;
+					} else {
+						ret = "None";
+					}
+				}
+			});
+			return ret;
 		}, {
 			data: conventions,
 			type: 'select',
@@ -56,6 +97,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block main %}
+{% csrf_token %}
 <h1 class="full_name">
 	<span class="editable" id="first_name" style="display: inline;">{% if user_instance.first_name %}{{ user_instance.first_name }}{% else %}<em>personal name</em>{% endif %}</span>
 	<span class="editable" id="last_name" style="display: inline;">{% if user_instance.last_name %}{{ user_instance.last_name }}{% else %}<em>surname</em>{% endif %}</span>
@@ -64,7 +106,7 @@ $(document).ready(function() {
 	<span class="at">@</span>{{ user_instance.username }}
 </h2>
 <h3>Active convention:</h3>
-<p id="profile_active_convention">
+<p id="active_convention">
 	{% if user_instance.get_profile.active_convention %}
 	{{ user_instance.get_profile.active_convention }}
 	{% else %}
