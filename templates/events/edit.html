@@ -38,24 +38,6 @@ $(document).ready(function() {
 	$('#modal_cancel').click(function() {
 		$('#create_dialog').modal('hide');
 	});
-	// Get new publisher form via ajax call, insert it into modal.
-	$('#add_game').click(function() {
-		$.ajax('/games/new/', {
-			type: 'GET',
-			success: function(data, textStatus, jqXHR) {
-				$('#create_dialog div.modal-body').html(data);
-			},
-			error: function(jqXHR, textStatus, errorThrown) {
-				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
-			},
-			complete: function(jqXHR, textStatus) {
-				$('#create_dialog').modal('show');
-				$('#create_dialog').on('shown', function() {
-					$('#create_dialog input:first').focus();
-				});
-			}
-		});
-	});
 });
 </script>
 {% endblock %}
@@ -68,6 +50,7 @@ $(document).ready(function() {
 	</div>
 	<form method="post" action="/games/new/" id="create_game" style="margin-bottom: 0px;">
 	<div class="modal-body">
+		<p>This form requires JavaScript to be enabled to work.</p>
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="btn" id="modal_cancel">cancel</a>

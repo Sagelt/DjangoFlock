@@ -2,9 +2,7 @@
 {% for field in form %}
     {{ field.label_tag }}
     {{ field }}
-    {% if field.name == "game" and request.user.is_staff and not request.is_ajax %}
-	<a href="#" class="btn btn-info btn-mini" id="add_game">new</a>
-    {% endif %}<div class="errors" id="{{ field.name }}_errors">
+    <div class="errors" id="{{ field.name }}_errors">
     {% for error in field.errors %}
     <br /><div class="alert alert-error">{{ error }}</div>
     {% endfor %}
@@ -14,6 +12,9 @@
 </fieldset>
 <script type="text/javascript">
 $(document).ready(function() {
+{% if request.user.is_staff and not request.is_ajax %}
+	$('[name=game]').after('<a href="#" class="btn btn-info btn-mini" id="add_game">new</a>');
+{% endif %}	
 	// This fieldset *must* be in a form with the id create_event for this
 	// behavior to work.
 	$('#create_event').submit(function() {
@@ -56,6 +57,24 @@ $(document).ready(function() {
 			}
 		});
 		return false;
+	});
+	// Get new publisher form via ajax call, insert it into modal.
+	$('#add_game').click(function() {
+		$.ajax('/games/new/', {
+			type: 'GET',
+			success: function(data, textStatus, jqXHR) {
+				$('#create_dialog div.modal-body').html(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				$('#create_dialog div.modal-body').html("<div class='alert alert-error'>" + textStatus + "</div>");
+			},
+			complete: function(jqXHR, textStatus) {
+				$('#create_dialog').modal('show');
+				$('#create_dialog').on('shown', function() {
+					$('#create_dialog input:first').focus();
+				});
+			}
+		});
 	});
 });
 </script>
