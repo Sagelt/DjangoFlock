@@ -5,7 +5,7 @@ from djangorestframework.response import Response, ErrorResponse
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -138,6 +138,8 @@ class EventRoot(ListOrCreateModelView):
                     kwargs['host__in'].append(user)
                 except User.DoesNotExist:
                     pass
+        if request.user.is_authenticated() and request.user.get_profile().active_convention is not None:
+            kwargs['convention'] = request.user.get_profile().active_convention
         result = super(EventRoot, self).get(request, **kwargs)
         return result
     
@@ -152,6 +154,10 @@ class EventRoot(ListOrCreateModelView):
             self.CONTENT['host'] = self.user
         else:
             raise PermissionDenied
+        if self.user.get_profile().active_convention is not None:
+            self.CONTENT['convention'] = self.user.get_profile().active_convention
+        else:
+            raise ValidationErrror("No active Convention set.")
         return super(EventRoot, self).post(request)
 
 class EventModelView(InstanceModelView):

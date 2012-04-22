@@ -31,7 +31,7 @@ class ConventionForm(forms.ModelForm):
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ('convention', 'game', 'start', 'end', 'min', 'max')
+        fields = ('game', 'start', 'end', 'min', 'max')
     
     def clean(self):
         cleaned_data = self.cleaned_data

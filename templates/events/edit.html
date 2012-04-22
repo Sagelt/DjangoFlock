@@ -16,6 +16,9 @@ $(document).ready(function() {
 				// partial can behave differently when called in an embedded
 				// fashion.
 				window.location = "/events/" + data.id + "/";
+			},
+			200: function(data, textStatus, jqXHR) {
+				window.location = "/events/" + data.id + "/";
 			}
 		}
 	});
