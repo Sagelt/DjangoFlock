@@ -1,10 +1,11 @@
 # Django settings for DjangoFlock project.
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
+    ('Kit', 'kit@transneptune.net'),
 )
 
 MANAGERS = ADMINS
@@ -65,7 +66,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/kit/Sites/DjangoFlock/static/',  
+    '/app/static/',  
 )
 
 # List of finder classes that know how to find static files in
@@ -112,7 +113,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '/Users/kit/Sites/DjangoFlock/templates'
+    '/app/templates'
 )
 
 INSTALLED_APPS = (
