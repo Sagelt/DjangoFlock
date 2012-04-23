@@ -1,9 +1,12 @@
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from events.exceptions import EventFullError, OwnEventError
+from textwrap import dedent
 
 # Create your models here.
 
@@ -130,6 +133,39 @@ class UserProfile(models.Model):
     def __str__(self):
         return "User Profile: %s" % self.user.username
 
+# Signals
+def notify_interested_users(sender, instance, created, **kwargs):
+    relevant_demands = Demand.objects.filter(
+        game=instance.game,
+        start__lte=instance.start,
+        end__gte=instance.end
+    #).exclude(
+    #    user=instance.host
+    )
+    current_site = Site.objects.get_current()
+    domain = current_site.domain
+    for demand in relevant_demands:
+        email = demand.user.email
+        if email:
+            send_mail(
+                '[RPGflock] New Event!',
+                dedent("""\
+                There's a new event on RPGflock you may be interested in:
+                
+                %(title)s.
+                
+                To check it out, just go to http://%(domain)s%(url)s.
+                """ % {'title': instance.title,
+                       'domain': domain,
+                       'url': instance.get_absolute_url()}),
+                'no-reply@rpgflock.com',
+                [email],
+                fail_silently=False
+            )
+# Send the notifications. Just email for now.
+# This signal is getting sent twice. Why?
+post_save.connect(notify_interested_users, sender=Event, dispatch_uid='notify_interested_users')
+
 # Register a callback function to create a user profile if none present.
 def create_or_save_user_profile(sender, instance, created, **kwargs):
     if created:
@@ -142,10 +178,11 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
         # getting around it. I specify the fields in the UserProfile, and take
         # them off of the User, where DRF has put them, and stick them back on
         # the profile where they go. Then I throw up in my mouth a little.
+        # So very not DRY.
         profile_fields = ('active_convention', )
         profile = instance.get_profile()
         for field in profile_fields:
             val = getattr(instance, field, None)
             setattr(profile, field, val)
         profile.save()
-post_save.connect(create_or_save_user_profile, sender=User)
+post_save.connect(create_or_save_user_profile, sender=User, dispatch_uid='create_or_save_user_profile')

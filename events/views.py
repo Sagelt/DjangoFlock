@@ -148,7 +148,8 @@ class EventRoot(ListOrCreateModelView):
         Create new event.
         
         This just fiddles with self.CONTENT, to insert the currently
-        authenticated user as the host.
+        authenticated user as the host and their active_convention as the
+        convention.
         """
         if self.user.is_authenticated():
             self.CONTENT['host'] = self.user
@@ -157,7 +158,7 @@ class EventRoot(ListOrCreateModelView):
         if self.user.get_profile().active_convention is not None:
             self.CONTENT['convention'] = self.user.get_profile().active_convention
         else:
-            raise ValidationErrror("No active Convention set.")
+            raise ValidationError("No active Convention set.")
         return super(EventRoot, self).post(request)
 
 class EventModelView(InstanceModelView):
