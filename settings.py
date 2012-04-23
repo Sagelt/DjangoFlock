@@ -132,6 +132,8 @@ INSTALLED_APPS = (
     'south',
     # Following for development only:
     'debug_toolbar',
+    # For production:
+    'gunicorn',
 )
 
 # A sample logging configuration. The only tangible logging
