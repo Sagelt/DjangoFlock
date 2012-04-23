@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+import settings
 import views
 
 # Uncomment the next two lines to enable the admin:
@@ -55,4 +55,6 @@ urlpatterns = patterns('',
     url('^demands/(?P<pk>[^/]+)/edit/$', views.demands_instance_edit),
 )
 
-urlpatterns += staticfiles_urlpatterns()
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    urlpatterns += staticfiles_urlpatterns()

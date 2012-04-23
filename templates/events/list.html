@@ -1,13 +1,14 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 
 {% block title %} | Events{% endblock %}
 
 {% block css %}
-<link rel='stylesheet' type='text/css' href='/static/js/fullcalendar/fullcalendar.css' />
+<link rel='stylesheet' type='text/css' href='{% static "js/fullcalendar/fullcalendar.css" %}' />
 {% endblock %}
 
 {% block js %}
-<script type='text/javascript' src='/static/js/fullcalendar/fullcalendar.min.js'></script>
+<script type='text/javascript' src='{% static "js/fullcalendar/fullcalendar.min.js" %}'></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	$('#calendar').fullCalendar({

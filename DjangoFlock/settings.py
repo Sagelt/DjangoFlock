@@ -50,16 +50,16 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = '/app/static/'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = 'http://media.transneptune.net/'
 
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = 'http://media.transneptune.net/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -103,9 +103,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django_mobile.middleware.MobileDetectionMiddleware',
     'django_mobile.middleware.SetFlavourMiddleware',
-    # Following for development only:
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
+
+if DEBUG:
+    # Following for development only:
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 ROOT_URLCONF = 'DjangoFlock.urls'
 
@@ -131,11 +133,13 @@ INSTALLED_APPS = (
     'django_mobile',
     'events',
     'south',
-    # Following for development only:
-    'debug_toolbar',
     # For production:
     'gunicorn',
 )
+
+if DEBUG:
+    # Following for development only:
+    INSTALLED_APPS += ('debug_toolbar',)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
