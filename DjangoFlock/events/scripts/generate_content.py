@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 def run():
     for name in range(1, 11):
         User.objects.create_user("Test%s" % name, "test@example.com", "foobar")
-    kit = User.objects.create_superuser("kit", "kit.la.t@gmail.com", "foobar")
+    if not User.objects.get(username='kit'):
+        kit = User.objects.create_superuser("kit", "kit.la.t@gmail.com", "foobar")
     
     p = Publisher(name='Test Publisher', publisher_url='http://example.com/')
     p.save()
