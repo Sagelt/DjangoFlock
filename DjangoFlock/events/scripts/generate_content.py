@@ -7,6 +7,8 @@ def run():
         User.objects.create_user("Test%s" % name, "test@example.com", "foobar")
     if not User.objects.get(username='kit'):
         kit = User.objects.create_superuser("kit", "kit.la.t@gmail.com", "foobar")
+    else:
+        kit = User.objects.get(username='kit')
     
     p = Publisher(name='Test Publisher', publisher_url='http://example.com/')
     p.save()
