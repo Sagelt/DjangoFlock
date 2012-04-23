@@ -1,3 +1,22 @@
+.alpha-badge {
+	display: inline-block;
+	color: #ff2300;
+	text-shadow: #000000 1px 1px 0px;
+	font-size: smaller;
+	font-weight: bold;
+	top: -0.4em;
+	left: 1.55em;
+	position: relative;
+	/* Safari */
+	-webkit-transform: rotate(-30deg);
+	/* Firefox */
+	-moz-transform: rotate(-30deg);
+	/* IE */
+	-ms-transform: rotate(-30deg);
+	/* Opera */
+	-o-transform: rotate(-30deg);
+}
+
 .brand .rpg {
 	font-family: 'Fanwood Text', serif;
 }
