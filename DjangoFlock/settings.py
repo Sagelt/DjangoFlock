@@ -1,6 +1,6 @@
 # Django settings for DjangoFlock project.
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -35,7 +35,7 @@ USE_L10N = True
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
-LOTOUT_URL = '/logout/'
+LOGOUT_URL = '/logout/'
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -168,4 +168,3 @@ try:
     from settings_local import *
 except ImportError:
     pass
-    # @todo: Detect if this is Heroku, and adjust paths and DEBUG appropriately.
