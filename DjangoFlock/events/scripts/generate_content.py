@@ -1,6 +1,7 @@
-from events.models import *
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.contrib.auth.models import User
+from events.models import *
+import random
 
 def run():
     for name in range(1, 11):
@@ -26,3 +27,13 @@ def run():
     
     d = Demand(user=kit, game=g, start=start, end=end)
     d.save()
+    
+    for user in User.objects.all():
+        start = datetime.now()
+        start.hour = random.randint(9, 17)
+        start.minute = random.choice([0, 30])
+        start.second = 0
+        start.microsecond = 0
+        end = start + timedelta(hour=random.randint(1, 6))
+        d = Demand(user=user, game=g, start=start, end=end)
+        d.save()

@@ -108,7 +108,7 @@ class Demand(models.Model):
     game = models.ForeignKey(Game)
     start = models.DateTimeField()
     end = models.DateTimeField()
-    # @todo: Should this have a Convention foreign key?
+    convention = models.ForeignKey(Convention)
     
     @property
     def duration(self):
