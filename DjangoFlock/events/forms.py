@@ -55,3 +55,8 @@ class DemandForm(forms.ModelForm):
     class Meta:
         model = Demand
         fields = ('game', 'start', 'end')
+        
+class DemandFilterForm(forms.Form):
+    start = forms.DateTimeField(required=False)
+    end = forms.DateTimeField(required=False)
+    games = forms.ModelMultipleChoiceField(queryset=Game.objects.all(), required=False)

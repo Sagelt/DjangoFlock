@@ -1,15 +1,20 @@
 # Create your views here.
+from collections import namedtuple
+from datetime import datetime, timedelta
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from events.forms import (PublisherForm, GameForm, ConventionForm, DemandForm, 
-    EventForm)
+    EventForm, DemandFilterForm)
 from events.models import Publisher, Game, Event, Convention, Demand
 from events.utils import datetime_range
+import urllib
 
 def home(request):
     if request.flavour == 'mobile':
@@ -226,33 +231,60 @@ def demands_list_mine(request):
         return render_to_response('demands/list.html', {'object': demands}, context_instance=RequestContext(request))
     return HttpResponseForbidden()
 
+@csrf_exempt
 def demands_list(request):
     # @todo: Rather than replicate code, make this page make an async call to
-    # the REST API. But what if you have no JS? Then this will be the fallback
+    # the REST API. But what if you have no JS? Then this will be the fallback.
     kwargs = {}
+    filter_form = DemandFilterForm(request.GET)
+    if request.GET.get('games') and filter_form.is_valid():
+        kwargs['game__in'] = filter_form.cleaned_data['games']
     if request.user.is_authenticated() and request.user.get_profile().active_convention is not None:
         kwargs['convention'] = request.user.get_profile().active_convention
     demands = Demand.objects.filter(**kwargs)
     # From start to end, make half-hour slots for every half-hour that has any
     # demand in it.
     # In each slot, put the count of demand-per-game.
-    # Return [(slot_start, {game: count, ...}), ...]
-    # @todo: Right now, these are from the beginning to the end of time.
-    # Really, it should be from now-to-the-future
-    start = min(d.start for d in demands)
-    end = max(d.end for d in demands)
+    # Return [(slot_start, slot_end, [node, ...]), ...]
+    if request.GET.get('start') and filter_form.is_valid():
+        #start = datetime.fromtimestamp(int(request.GET['start']))
+        start = filter_form.cleaned_data['start']
+    else:
+        start = datetime.now().replace(hour=6, minute=0, second=0, microsecond=0)
+    if request.GET.get('end') and filter_form.is_valid():
+        #end = datetime.fromtimestamp(int(request.GET['end']))
+        end = filter_form.cleaned_data['end']
+    else:
+        if demands:
+            end = max(d.end for d in demands)
+        else:
+            #end = datetime.max
+            end = start + timedelta(hours=24)
     results = []
+    Node = namedtuple('Node', ("game", "url", "votes"))
+    # @bug: datetime_range, while a generator, can still take a huge lot of time
+    # and beat the database with a stick if the span between start and end is
+    # too large. Hand-check?
     for slot_start, slot_end in datetime_range(start, end):
-        votes = demands.filter(start__lte=slot_end, end__gte=slot_start).values('game__name').annotate(Count('game__name'))
-        slot = [slot_start, slot_end, {}]
+        votes = demands.filter(start__lte=slot_end, end__gte=slot_start).values('game__id', 'game__name').annotate(Count('game__name'))
+        slot = [slot_start, slot_end, []]
         for vote in votes:
-            # @todo:
-            # Replace this dict with a Named Tuple (collections.namedtuple)
-            # Calculate url, add that in to the namedtuple, use it in display
-            slot[2][vote['game__name']] = vote['game__name__count']
+            node = Node(
+                vote['game__name'],
+                reverse('events-new') + '?' + urllib.urlencode({
+                    'game': vote['game__id'],
+                    'start': slot_start,
+                    'end': slot_end
+                }),
+                vote['game__name__count']
+            )
+            slot[2].append(node)
         results.append(tuple(slot))
+    demand_filter_form = DemandFilterForm(request.GET)
     return render_to_response('demands/list.html',
-        {'object': demands, 'results': results},
+        {'object': demands,
+        'results': results,
+        'filter_form': demand_filter_form},
         context_instance=RequestContext(request))
 
 @login_required

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
-def datetime_range(start, end, step=timedelta(minutes=30)):
+def datetime_range(start, end, step=timedelta(hours=1)):
     """
-    Generator for a list of datetimes. If step is not provided, defaults to
-    half-hour increments.
+    Generator for a list of datetimes. If step is not provided, defaults to one
+    hour increments.
     
     Behaves much like range, except the end is inclusive.
     """

@@ -105,10 +105,6 @@ MIDDLEWARE_CLASSES = (
     'django_mobile.middleware.SetFlavourMiddleware',
 )
 
-if DEBUG:
-    # Following for development only:
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-
 ROOT_URLCONF = 'DjangoFlock.urls'
 
 TEMPLATE_DIRS = (
@@ -136,10 +132,6 @@ INSTALLED_APPS = (
     # For production:
     'gunicorn',
 )
-
-if DEBUG:
-    # Following for development only:
-    INSTALLED_APPS += ('debug_toolbar',)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

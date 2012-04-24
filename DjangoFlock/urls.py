@@ -42,7 +42,7 @@ urlpatterns = patterns('',
     url('^conventions/(?P<pk>[^/]+)/edit/$', views.conventions_instance_edit),
 
     url('^events/$', views.events_list),
-    url('^events/new/$', views.events_new),
+    url('^events/new/$', views.events_new, name='events-new'),
     url('^events/(?P<pk>[^/]+)/$', views.events_instance),
     url('^events/(?P<pk>[^/]+)/edit/$', views.events_instance_edit),
     url('^events/(?P<pk>[^/]+)/join/$', views.events_instance_join),
