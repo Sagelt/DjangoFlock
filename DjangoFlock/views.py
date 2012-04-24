@@ -1,13 +1,15 @@
 # Create your views here.
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.db.models import Count
 from django.http import HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from events.forms import PublisherForm, GameForm, ConventionForm, DemandForm, \
-    EventForm
+from events.forms import (PublisherForm, GameForm, ConventionForm, DemandForm, 
+    EventForm)
 from events.models import Publisher, Game, Event, Convention, Demand
+from events.utils import datetime_range
 
 def home(request):
     if request.flavour == 'mobile':
@@ -126,7 +128,12 @@ def games_instance_edit(request, pk):
                               context_instance=RequestContext(request))
 
 def events_list(request):
-    events = Event.objects.all()
+    # @todo: Rather than replicate code, make this page make an async call to
+    # the REST API. But what if you have no JS? Then this will be the fallback
+    kwargs = {}
+    if request.user.is_authenticated() and request.user.get_profile().active_convention is not None:
+        kwargs['convention'] = request.user.get_profile().active_convention
+    events = Event.objects.filter(**kwargs)
     return render_to_response('events/list.html', {'events': events}, context_instance=RequestContext(request))
 
 @login_required
@@ -220,8 +227,30 @@ def demands_list_mine(request):
     return HttpResponseForbidden()
 
 def demands_list(request):
-    demands = Demand.objects.all()
-    return render_to_response('demands/list.html', {'object': demands}, context_instance=RequestContext(request))
+    # @todo: Rather than replicate code, make this page make an async call to
+    # the REST API. But what if you have no JS? Then this will be the fallback
+    kwargs = {}
+    if request.user.is_authenticated() and request.user.get_profile().active_convention is not None:
+        kwargs['convention'] = request.user.get_profile().active_convention
+    demands = Demand.objects.filter(**kwargs)
+    # From start to end, make half-hour slots for every half-hour that has any
+    # demand in it.
+    # In each slot, put the count of demand-per-game.
+    # Return [(slot_start, {game: count, ...}), ...]
+    # @todo: Right now, these are from the beginning to the end of time.
+    # Really, it should be from now-to-the-future
+    start = min(d.start for d in demands)
+    end = max(d.end for d in demands)
+    results = []
+    for slot_start, slot_end in datetime_range(start, end):
+        votes = demands.filter(start__lte=slot_end, end__gte=slot_start).values('game__name').annotate(Count('game__name'))
+        slot = [slot_start, slot_end, {}]
+        for vote in votes:
+            slot[2][vote['game__name']] = vote['game__name__count']
+        results.append(tuple(slot))
+    return render_to_response('demands/list.html',
+        {'object': demands, 'results': results},
+        context_instance=RequestContext(request))
 
 @login_required
 def demands_new(request):

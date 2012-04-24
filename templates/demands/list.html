@@ -22,4 +22,18 @@
 	<li class="empty">No demands.</li>
 {% endfor %}
 </ul>
+
+<ul>
+{% for slot in results %}
+	<li>{{ slot.0 }} to {{ slot.1 }}
+	{% for game, votes in slot.2.items %}
+		<li>{{ game }}: {{ votes }}</li>
+	{% empty %}
+		<li class="empty">No votes.</li>
+	{% endfor %}
+	</li>
+{% empty %}
+	<li class="empty">No demands.</li>
+{% endfor %}
+</ul>
 {% endblock %}
