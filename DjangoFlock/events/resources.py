@@ -6,7 +6,7 @@ from events.models import Game, Event, Publisher, Convention, Demand
 class ConventionResource(ModelResource):
     model = Convention
     ordering = ('name', )
-    fields = ('id', 'name')
+    fields = ('id', 'name', 'url')
 
 class UserResource(FormResource):
     model = User
@@ -29,8 +29,9 @@ class GameResource(ModelResource):
 class DemandResource(ModelResource):
     model = Demand
     ordering = ('game', )
-    fields = ('id', ('user', UserResource), ('game', GameResource), 'start',
-              'end', 'duration', 'url')
+    fields = ('id', ('user', UserResource), ('game', GameResource),
+        ('convention', ConventionResource), 'start',
+        'end', 'duration', 'url')
 
 class EventResource(ModelResource):
     model = Event

@@ -1,6 +1,16 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+STATIC_ROOT = ''
+
+STATIC_URL = '/static/'
+
+# URL prefix for admin static files -- CSS, JavaScript and images.
+# Make sure to use a trailing slash.
+# Examples: "http://foo.com/static/admin/", "/static/admin/".
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
@@ -27,7 +37,7 @@ DATABASES = {
 }
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'something here'
+SECRET_KEY = 'something secret here'
 
 TEMPLATE_STRING_IF_INVALID = "<h1>BAD TEXT</h1>"
 
@@ -38,7 +48,7 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 EMAIL_HOST = 'example.com'
-EMAIL_HOST_USER = 'email@example.com'
-EMAIL_HOST_PASSWORD = 'password'
+EMAIL_HOST_USER = 'test@example.com'
+EMAIL_HOST_PASSWORD = 'some password here'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

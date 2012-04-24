@@ -70,6 +70,8 @@ class DemandRoot(ListOrCreateModelView):
                     kwargs['game__in'].append(game)
                 except Game.DoesNotExist:
                     pass
+        if request.user.is_authenticated() and request.user.get_profile().active_convention is not None:
+            kwargs['convention'] = request.user.get_profile().active_convention
         # **kwargs gets passed to a filter on the queryset
         return super(DemandRoot, self).get(request, **kwargs)
 
