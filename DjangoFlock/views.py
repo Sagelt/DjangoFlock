@@ -150,7 +150,7 @@ def events_new(request):
             event.save()
             return redirect(event)
     else:
-        form = EventForm()
+        form = EventForm(initial=request.GET.dict())
     return render_to_response('events/%s' % render_target,
                               {'form': form, 'editing': False},
                               context_instance=RequestContext(request))
@@ -246,6 +246,9 @@ def demands_list(request):
         votes = demands.filter(start__lte=slot_end, end__gte=slot_start).values('game__name').annotate(Count('game__name'))
         slot = [slot_start, slot_end, {}]
         for vote in votes:
+            # @todo:
+            # Replace this dict with a Named Tuple (collections.namedtuple)
+            # Calculate url, add that in to the namedtuple, use it in display
             slot[2][vote['game__name']] = vote['game__name__count']
         results.append(tuple(slot))
     return render_to_response('demands/list.html',
